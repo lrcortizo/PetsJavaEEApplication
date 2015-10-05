@@ -41,25 +41,23 @@ Select your source code folder (where the `pom.xml` should be placed)
 Eclipse should then import 2 projects (`xcs-sample` and `domain`)
 
 ## Sample 1: Testing entities
-Coming soon...
+Using JUnit and Hamcrest, we will see how to test JPA entities or any other
+basic Java class.
 
-## Sample 2: Testing persistence
-Coming soon...
+## Sample 2: Testing with test doubles
+Coming soon....
 
 ## Sample 3: Testing EJBs
 Coming soon...
 
-## Sample 4: Testing with test doubles
+## Sample 4: Testing JAX-RS
 Coming soon...
 
-## Sample 5: Testing JAX-RS
+## Sample 5: Testing AngularJS
 Coming soon...
 
-## Sample 6: Testing AngularJS
+## Sample 6: Testing JSF
 Coming soon...
 
-## Sample 7: Testing JSF
-Coming soon...
-
-## Sample 8: Additional Testing Tools
+## Sample 7: Additional Testing Tools
 Coming soon...
