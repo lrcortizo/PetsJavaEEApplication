@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -22,12 +23,12 @@ import javax.persistence.TemporalType;
  * 
  * @author Miguel Reboiro-Jato
  */
-@Entity
+@Entity(name = "Pet")
 public class Pet implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
 	@Column(length = 100, nullable = false)
@@ -42,11 +43,17 @@ public class Pet implements Serializable {
 	private Date birth;
 	
 	@ManyToOne
-	@JoinColumn(name = "owner")
+	@JoinColumn(name = "owner", referencedColumnName = "login")
 	private Owner owner;
 	
-	// Required for JPA
+	// Required for JPA.
 	Pet() {}
+	
+	// For testing purposes.
+	Pet(int id, String name, AnimalType animal, Date birth) {
+		this(name, animal, birth, null);
+		this.id = id;
+	}
 	
 	/**
 	 * Creates a new instance of {@code Pet} without owner.
@@ -87,6 +94,10 @@ public class Pet implements Serializable {
 		this.setAnimal(animal);
 		this.setBirth(birth);
 		this.setOwner(owner);
+	}
+	
+	public int getId() {
+		return id;
 	}
 
 	/**

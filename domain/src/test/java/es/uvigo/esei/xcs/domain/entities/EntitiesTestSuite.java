@@ -7,8 +7,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
 	OwnerTest.class,
+	AdministratorTest.class,
 	PetTest.class
 })
-public class EntitiesTestSuite {
-
-}
+public class EntitiesTestSuite {}
