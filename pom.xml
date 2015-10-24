@@ -10,6 +10,7 @@
 
 	<modules>
 		<module>domain</module>
+		<module>service</module>
 	</modules>
 
 	<properties>
@@ -18,6 +19,7 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<failOnMissingWebXml>false</failOnMissingWebXml>
 		
 		<!-- BOM versions -->
 		<javaee.api.version>7.0</javaee.api.version>
@@ -33,11 +35,15 @@
 		<arquillian.persistence.dbunit.version>1.0.0.Alpha7</arquillian.persistence.dbunit.version>
 		<mysql.connector.java.version>5.1.21</mysql.connector.java.version>
 		<slf4j.version>1.5.10</slf4j.version>
+		<easymock.version>3.4</easymock.version>
+		<arquillian.glassfish.embedded.version>1.0.0.CR4</arquillian.glassfish.embedded.version>
+		<glassfish.embedded.all.version>4.1</glassfish.embedded.all.version>
 		
 		<!-- Plugins versions -->
 		<wildfly.maven.plugin.version>1.1.0.Alpha1</wildfly.maven.plugin.version>
 		<maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
 		<maven.surefire.plugin.version>2.18.1</maven.surefire.plugin.version>
+		<maven.resources.plugin.version>2.7</maven.resources.plugin.version>
 	</properties>
 
 	<dependencyManagement>
@@ -54,6 +60,18 @@
 				<version>${arquillian.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			
+			<!-- Modules -->
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>domain</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>service</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 			
 			<!-- General -->
@@ -73,6 +91,11 @@
 				<groupId>org.hamcrest</groupId>
 				<artifactId>java-hamcrest</artifactId>
 				<version>${hamcrest.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.easymock</groupId>
+				<artifactId>easymock</artifactId>
+				<version>${easymock.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.arquillian.extension</groupId>
@@ -110,21 +133,15 @@
 				<version>${wildfly.version}</version>
 			</dependency>
 
-			<!-- Modules -->
-	                <dependency>
-				<groupId>es.uvigo.esei.dgss</groupId>
-				<artifactId>domain</artifactId>
-				<version>${project.version}</version>
+			<dependency>
+				<groupId>org.jboss.arquillian.container</groupId>
+				<artifactId>arquillian-glassfish-embedded-3.1</artifactId>
+				<version>${arquillian.glassfish.embedded.version}</version>
 			</dependency>
-                        <dependency>
-                                <groupId>es.uvigo.esei.dgss</groupId>
-                                <artifactId>service</artifactId>
-                                <version>${project.version}</version>
-                        </dependency>
-	                <dependency>
-				<groupId>es.uvigo.esei.dgss</groupId>
-				<artifactId>web</artifactId>
-				<version>${project.version}</version>
+			<dependency>
+				<groupId>org.glassfish.main.extras</groupId>
+				<artifactId>glassfish-embedded-all</artifactId>
+				<version>${glassfish.embedded.all.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -143,15 +160,154 @@
 					<version>${maven.surefire.plugin.version}</version>
 				</plugin>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>${maven.resources.plugin.version}</version>
+				</plugin>
+				<plugin>
 					<groupId>org.wildfly.plugins</groupId>
 					<artifactId>wildfly-maven-plugin</artifactId>
 					<version>${wildfly.maven.plugin.version}</version>
+				</plugin>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-dependency-plugin
+										</artifactId>
+										<versionRange>
+											[2.10,)
+										</versionRange>
+										<goals>
+											<goal>unpack</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
 
 	<profiles>
+		<profile>
+			<id>wildfly-embedded-h2</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.wildfly</groupId>
+					<artifactId>wildfly-arquillian-container-embedded</artifactId>
+					<scope>test</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.wildfly</groupId>
+					<artifactId>wildfly-embedded</artifactId>
+					<scope>test</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+					<scope>test</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-simple</artifactId>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+			<build>
+				<testResources>
+					<testResource>
+						<directory>src/test/resources</directory>
+					</testResource>
+					<testResource>
+						<directory>src/test/resources-wildfly-embedded-h2</directory>
+					</testResource>
+				</testResources>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<forkCount>1</forkCount>
+							<systemPropertyVariables>
+								<java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+								<wildfly.version>${wildfly.version}</wildfly.version>
+								<arquillian.launch>wildfly-embedded-h2</arquillian.launch>
+							</systemPropertyVariables>
+							<redirectTestOutputToFile>false</redirectTestOutputToFile>
+						</configuration>
+					</plugin>
+
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>unpack</id>
+								<phase>process-test-classes</phase>
+								<goals>
+									<goal>unpack</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>org.wildfly</groupId>
+											<artifactId>wildfly-dist</artifactId>
+											<version>${wildfly.version}</version>
+											<type>zip</type>
+											<overWrite>false</overWrite>
+											<outputDirectory>target</outputDirectory>
+										</artifactItem>
+									</artifactItems>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-resources-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>copy-mysql-ds</id>
+								<phase>process-test-classes</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>target/wildfly-${wildfly.version}/standalone/configuration</outputDirectory>
+									<resources>
+										<resource>
+											<directory>src/test/resources-wildfly-embedded-h2</directory>
+											<include>standalone.xml</include>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
 		<profile>
 			<id>wildfly-embedded-mysql</id>
 			<dependencies>
@@ -193,9 +349,9 @@
 							<forkCount>1</forkCount>
 							<systemPropertyVariables>
 								<java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-								<jboss.home>${project.basedir}/target/wildfly-${wildfly.version}</jboss.home>
-								<module.path>${project.basedir}/target/wildfly-${wildfly.version}/modules</module.path>
-								<arquillian.launch>wildfly-embedded</arquillian.launch>
+								<mysql.version>${mysql.connector.java.version}</mysql.version>
+								<wildfly.version>${wildfly.version}</wildfly.version>
+								<arquillian.launch>wildfly-embedded-mysql</arquillian.launch>
 							</systemPropertyVariables>
 							<redirectTestOutputToFile>false</redirectTestOutputToFile>
 						</configuration>
@@ -234,6 +390,7 @@
 										<artifactItem>
 											<groupId>mysql</groupId>
 											<artifactId>mysql-connector-java</artifactId>
+											<version>${mysql.connector.java.version}</version>
 											<type>jar</type>
 											<overWrite>false</overWrite>
 											<outputDirectory>target/wildfly-${wildfly.version}/standalone/deployments</outputDirectory>
@@ -243,79 +400,31 @@
 							</execution>
 						</executions>
 					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>wildfly-embedded-h2</id>
-			<dependencies>
-				<dependency>
-					<groupId>org.wildfly</groupId>
-					<artifactId>wildfly-arquillian-container-embedded</artifactId>
-					<scope>test</scope>
-				</dependency>
-				<dependency>
-					<groupId>org.wildfly</groupId>
-					<artifactId>wildfly-embedded</artifactId>
-					<scope>test</scope>
-				</dependency>
-				<dependency>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
-					<scope>test</scope>
-				</dependency>
-				<dependency>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-simple</artifactId>
-					<scope>test</scope>
-				</dependency>
-			</dependencies>
-			<build>
-				<testResources>
-					<testResource>
-						<directory>src/test/resources</directory>
-					</testResource>
-					<testResource>
-						<directory>src/test/resources-wildfly-embedded-h2</directory>
-					</testResource>
-				</testResources>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<configuration>
-							<forkCount>1</forkCount>
-							<systemPropertyVariables>
-								<java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-								<jboss.home>${project.basedir}/target/wildfly-${wildfly.version}</jboss.home>
-								<module.path>${project.basedir}/target/wildfly-${wildfly.version}/modules</module.path>
-								<arquillian.launch>wildfly-embedded</arquillian.launch>
-							</systemPropertyVariables>
-							<redirectTestOutputToFile>false</redirectTestOutputToFile>
-						</configuration>
-					</plugin>
 
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-dependency-plugin</artifactId>
+						<artifactId>maven-resources-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>unpack</id>
+								<id>copy-mysql-ds</id>
 								<phase>process-test-classes</phase>
 								<goals>
-									<goal>unpack</goal>
+									<goal>copy-resources</goal>
 								</goals>
 								<configuration>
-									<artifactItems>
-										<artifactItem>
-											<groupId>org.wildfly</groupId>
-											<artifactId>wildfly-dist</artifactId>
-											<version>${wildfly.version}</version>
-											<type>zip</type>
-											<overWrite>false</overWrite>
-											<outputDirectory>target</outputDirectory>
-										</artifactItem>
-									</artifactItems>
+									<outputDirectory>target/wildfly-${wildfly.version}/standalone</outputDirectory>
+									<resources>
+										<resource>
+											<directory>src/test/resources-wildfly-embedded-mysql</directory>
+											<include>mysql-ds.xml</include>
+											<targetPath>deployments</targetPath>
+										</resource>
+										<resource>
+											<directory>src/test/resources-wildfly-embedded-mysql</directory>
+											<include>standalone.xml</include>
+											<targetPath>configuration</targetPath>
+										</resource>
+									</resources>
 								</configuration>
 							</execution>
 						</executions>

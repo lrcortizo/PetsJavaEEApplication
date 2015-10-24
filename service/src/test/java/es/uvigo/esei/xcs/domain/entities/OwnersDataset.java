@@ -74,6 +74,10 @@ public class OwnersDataset {
 		);
 	}
 	
+	public static Owner anyOwner() {
+		return ownerWithPets();
+	}
+	
 	public static Owner ownerWithPets() {
 		return owners()[1];
 	}
@@ -82,7 +86,31 @@ public class OwnersDataset {
 		return owners()[3];
 	}
 	
+	public static Pet anyPet() {
+		return pet(existentPetId());
+	}
+	
 	public static Pet newPet() {
-		return new Pet("Lorenacat", AnimalType.CAT, new Date(946684861000L));
+		return newPetWithOwner(null);
+	}
+	
+	public static Pet newPetWithOwner(Owner owner) {
+		return new Pet("Lorenacat", AnimalType.CAT, new Date(946684861000L), owner);
+	}
+	
+	public static String existentLogin() {
+		return "pepe";
+	}
+	
+	public static String existentPetName() {
+		return "Pepecat";
+	}
+	
+	public static int existentPetId() {
+		return 2;
+	}
+	
+	public static int nonExistentPetId() {
+		return 1000000;
 	}
 }

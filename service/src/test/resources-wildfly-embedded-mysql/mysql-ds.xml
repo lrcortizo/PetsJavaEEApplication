@@ -1,0 +1,17 @@
+<datasources xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.ironjacamar.org/doc/schema"
+	xsi:schemaLocation="http://www.ironjacamar.org/doc/schema http://www.ironjacamar.org/doc/schema/datasources_1_1.xsd">
+	
+	<datasource jndi-name="java:jboss/datasources/xcs" pool-name="MySQLPool">
+		<connection-url>jdbc:mysql://localhost:3306/xcs</connection-url>
+		<driver>mysql-connector-java-${mysql.version}.jar</driver>
+		<pool>
+			<max-pool-size>30</max-pool-size>
+		</pool>
+		<security>
+			<user-name>xcs</user-name>
+			<password>xcs</password>
+		</security>
+	</datasource>
+	
+</datasources>
