@@ -11,8 +11,12 @@ import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.newOwnerWithPersis
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.newOwnerWithoutPets;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.owner;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.owners;
+import static es.uvigo.esei.xcs.http.util.HasHttpStatus.hasHttpStatus;
 import static javax.ws.rs.client.Entity.json;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.CREATED;
+import static javax.ws.rs.core.Response.Status.METHOD_NOT_ALLOWED;
+import static javax.ws.rs.core.Response.Status.OK;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -80,7 +84,7 @@ public class OwnerResourceRestTest {
 	) throws Exception {
 	    final Response response = webTarget.request().get();
 
-	    assertThat(response.getStatusInfo(), is(equalTo(Response.Status.OK)));
+	    assertThat(response, hasHttpStatus(OK));
 	    
 	    final Owner owner = response.readEntity(Owner.class);
 	    final Owner expected = owner("pepe");
@@ -107,8 +111,8 @@ public class OwnerResourceRestTest {
 		@ArquillianResteasyResource(BASE_PATH + NON_EXISTENT_LOGIN) ResteasyWebTarget webTarget
 	) throws Exception {
 	    final Response response = webTarget.request().get();
-	    
-	    assertThat(response.getStatusInfo(), is(equalTo(Response.Status.BAD_REQUEST)));
+
+	    assertThat(response, hasHttpStatus(BAD_REQUEST));
 	}
 	
 	@Test @InSequence(6)
@@ -131,7 +135,7 @@ public class OwnerResourceRestTest {
 	) throws Exception {
 	    final Response response = webTarget.request().get();
 
-	    assertThat(response.getStatusInfo(), is(equalTo(Response.Status.OK)));
+	    assertThat(response, hasHttpStatus(OK));
 	    
 	    final List<Owner> list = ListOwnerType.readEntity(response);
 	    assertThat(list, containsOwnersInAnyOrder(owners()));
@@ -190,8 +194,8 @@ public class OwnerResourceRestTest {
 	
 	private void testCreateOwner(WebTarget webTarget, Owner newOwner, Owner persistentOwner) {
 	    final Response response = webTarget.request().post(json(newOwner));
-	    
-	    assertThat(response.getStatusInfo(), is(equalTo(Response.Status.CREATED)));
+
+	    assertThat(response, hasHttpStatus(CREATED));
 	    
 	    final String location = response.getHeaderString("Location");
 	    
@@ -217,8 +221,8 @@ public class OwnerResourceRestTest {
 		owner.changePassword("newpassword");
 	    
 	    final Response response = webTarget.request().put(json(owner));
-		
-	    assertThat(response.getStatusInfo(), is(equalTo(Response.Status.OK)));
+
+	    assertThat(response, hasHttpStatus(OK));
 	}
 	
 	@Test @InSequence(32)
@@ -240,8 +244,8 @@ public class OwnerResourceRestTest {
 		@ArquillianResteasyResource(BASE_PATH + OWNER_WITHOUT_PETS_LOGIN) ResteasyWebTarget webTarget
 	) throws Exception {
 	    final Response response = webTarget.request().delete();
-	    
-	    assertThat(response.getStatusInfo(), is(equalTo(Response.Status.OK)));
+
+	    assertThat(response, hasHttpStatus(OK));
 	}
 	
 	@Test @InSequence(42)
@@ -263,8 +267,8 @@ public class OwnerResourceRestTest {
 		@ArquillianResteasyResource(BASE_PATH + OWNER_WITH_PETS_LOGIN) ResteasyWebTarget webTarget
 	) throws Exception {
 	    final Response response = webTarget.request().delete();
-	    
-	    assertThat(response.getStatusInfo(), is(equalTo(Response.Status.OK)));
+
+	    assertThat(response, hasHttpStatus(OK));
 	}
 	
 	@Test @InSequence(45)
@@ -286,8 +290,8 @@ public class OwnerResourceRestTest {
 		@ArquillianResteasyResource(BASE_PATH) ResteasyWebTarget webTarget
 	) throws Exception {
 	    final Response response = webTarget.request().delete();
-	    
-	    assertThat(response.getStatusInfo(), is(equalTo(Response.Status.METHOD_NOT_ALLOWED)));
+
+	    assertThat(response, hasHttpStatus(METHOD_NOT_ALLOWED));
 	}
 	
 	@Test @InSequence(48)

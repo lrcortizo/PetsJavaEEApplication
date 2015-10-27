@@ -7,8 +7,11 @@ import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.anyOwner;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.newOwnerWithFreshPets;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.newOwnerWithPersistentPets;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.owners;
+import static es.uvigo.esei.xcs.http.util.HasHttpStatus.hasHttpStatus;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static javax.ws.rs.core.Response.Status.CREATED;
+import static javax.ws.rs.core.Response.Status.OK;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -66,7 +69,7 @@ public class OwnerResourceUnitTest extends EasyMockSupport {
 		
 		final Response response = resource.get(owner.getLogin());
 		
-		assertThat(response.getStatusInfo(), is(equalTo(Response.Status.OK)));
+		assertThat(response, hasHttpStatus(OK));
 		assertThat(response.getEntity(), is(instanceOf(Owner.class)));
 		assertThat((Owner) response.getEntity(), is(equalsToOwner(owner)));
 	}
@@ -101,8 +104,8 @@ public class OwnerResourceUnitTest extends EasyMockSupport {
 		replayAll();
 		
 		final Response response = resource.list();
-		
-		assertThat(response.getStatusInfo(), is(equalTo(Response.Status.OK)));
+
+		assertThat(response, hasHttpStatus(OK));
 		assertThat(response.getEntity(), is(instanceOf(List.class)));
 		assertThat((List<Owner>) response.getEntity(), containsOwnersInAnyOrder(owners));
 	}
@@ -116,8 +119,8 @@ public class OwnerResourceUnitTest extends EasyMockSupport {
 		replayAll();
 		
 		final Response response = resource.list();
-		
-		assertThat(response.getStatusInfo(), is(equalTo(Response.Status.OK)));
+
+		assertThat(response, hasHttpStatus(OK));
 		assertThat(response.getEntity(), is(instanceOf(List.class)));
 		assertThat((List<Owner>) response.getEntity(), is(empty()));
 	}
@@ -142,8 +145,8 @@ public class OwnerResourceUnitTest extends EasyMockSupport {
 		replayAll();
 		
 		final Response response = resource.create(newOwner);
-		
-		assertThat(response.getStatusInfo(), is(equalTo(Response.Status.CREATED)));
+
+		assertThat(response, hasHttpStatus(CREATED));
 		assertThat(response.getHeaderString("Location"), is(equalTo(mockUri.toString())));
 	}
 
@@ -165,8 +168,8 @@ public class OwnerResourceUnitTest extends EasyMockSupport {
 		replayAll();
 		
 		final Response response = resource.update(owner);
-		
-		assertThat(response.getStatusInfo(), is(equalTo(Response.Status.OK)));
+
+		assertThat(response, hasHttpStatus(OK));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -185,8 +188,8 @@ public class OwnerResourceUnitTest extends EasyMockSupport {
 		replayAll();
 		
 		final Response response = resource.delete(login);
-		
-		assertThat(response.getStatusInfo(), is(equalTo(Response.Status.OK)));
+
+		assertThat(response, hasHttpStatus(OK));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
