@@ -42,22 +42,26 @@ Eclipse should then import 2 projects (`xcs-sample` and `domain`)
 
 ## Sample 1: Testing entities
 Using JUnit and Hamcrest, we will see how to test JPA entities or any other
-basic Java class.
+Java class. This libraries are the base for every test done in the application.
 
-## Sample 2: Testing with test doubles
-Coming soon....
+## Sample 2: Testing EJBs
+Using Arquillian and Arquillian Persistence, the EJBs are tested. We wouldn't do
+unit testing in this layer, as we don't want to mock the `EntityManager`.
 
-## Sample 3: Testing EJBs
-Coming soon...
+In this layer we will use some workarounds to set the desired role and principal
+in the tests.
+
+## Sample 3: Testing with test doubles
+Using EasyMock, we will mock the EJBs to test the REST classes isolated from the
+underlying layer.
 
 ## Sample 4: Testing JAX-RS
-Coming soon...
+Using Arquillian REST Client, we will test the REST API accessing it as real
+HTTP clients.
 
-## Sample 5: Testing AngularJS
-Coming soon...
+## Sample 5: Testing JSF
+Using Arquillian Drone, Arquillian Graphene and Selenium, we will test the JSF
+web interface accessing it as real Web clients.
 
-## Sample 6: Testing JSF
-Coming soon...
-
-## Sample 7: Additional Testing Tools
+## Sample 6: Additional Testing Tools
 Coming soon...

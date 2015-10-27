@@ -11,7 +11,9 @@ import java.util.Collection;
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * A pet owner.
@@ -20,6 +22,7 @@ import javax.persistence.OneToMany;
  */
 @Entity
 @DiscriminatorValue("OWNER")
+@XmlRootElement(name = "owner", namespace = "http://entities.domain.xcs.esei.uvigo.es")
 public class Owner extends User implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
@@ -27,7 +30,8 @@ public class Owner extends User implements Serializable {
 		mappedBy = "owner",
 		targetEntity = Pet.class,
 		cascade = CascadeType.ALL,
-		orphanRemoval = true
+		orphanRemoval = true,
+		fetch = FetchType.EAGER
 	)
 	private Collection<Pet> pets;
 	

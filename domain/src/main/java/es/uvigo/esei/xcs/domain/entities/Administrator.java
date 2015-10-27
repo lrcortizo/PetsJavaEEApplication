@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * An administrator of the application.
@@ -12,6 +13,7 @@ import javax.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue("ADMIN")
+@XmlRootElement(name = "admin", namespace = "http://entities.domain.xcs.esei.uvigo.es")
 public class Administrator extends User implements Serializable {
 	private static final long serialVersionUID = 1L;
 

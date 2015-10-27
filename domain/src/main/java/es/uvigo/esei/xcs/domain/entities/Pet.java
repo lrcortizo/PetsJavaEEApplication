@@ -17,6 +17,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * A pet.
@@ -24,6 +28,8 @@ import javax.persistence.TemporalType;
  * @author Miguel Reboiro-Jato
  */
 @Entity(name = "Pet")
+@XmlRootElement(name = "pet", namespace = "http://entities.domain.xcs.esei.uvigo.es")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Pet implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
@@ -43,7 +49,8 @@ public class Pet implements Serializable {
 	private Date birth;
 	
 	@ManyToOne
-	@JoinColumn(name = "owner", referencedColumnName = "login")
+	@JoinColumn(name = "owner", referencedColumnName = "login", nullable = false)
+	@XmlTransient
 	private Owner owner;
 	
 	// Required for JPA.

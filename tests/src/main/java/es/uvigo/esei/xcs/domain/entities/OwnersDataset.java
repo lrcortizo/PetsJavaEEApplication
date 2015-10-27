@@ -8,6 +8,11 @@ import java.util.Date;
 import java.util.Set;
 
 public class OwnersDataset {
+	public static final String EXISTENT_LOGIN = "pepe";
+	public static final String NON_EXISTENT_LOGIN = "non-existent";
+	public static final String OWNER_WITH_PETS_LOGIN = "juan";
+	public static final String OWNER_WITHOUT_PETS_LOGIN = "lorena";
+
 	public static Owner owner(String login) {
 		return stream(owners())
 			.filter(owner -> owner.getLogin().equals(login))
@@ -32,9 +37,9 @@ public class OwnersDataset {
 	
 	public static Owner[] owners() {
 		return new Owner[] {
-			new Owner("pepe", "pepepass",
+			new Owner(EXISTENT_LOGIN, "pepepass",
 				new Pet(1, "Pepecat", AnimalType.CAT, new Date(946684861000L))),
-			new Owner("juan", "juanpass",
+			new Owner(OWNER_WITH_PETS_LOGIN, "juanpass",
 				new Pet(2, "Max", AnimalType.CAT, new Date(946684861000L)),
 				new Pet(3, "Juandog", AnimalType.DOG, new Date(946684861000L))
 			),
@@ -43,7 +48,7 @@ public class OwnersDataset {
 				new Pet(5, "Max", AnimalType.DOG, new Date(946684861000L)),
 				new Pet(6, "Anabird", AnimalType.BIRD, new Date(946684861000L))
 			),
-			new Owner("lorena", "lorenapass")
+			new Owner(OWNER_WITHOUT_PETS_LOGIN, "lorenapass")
 		};
 	}
 	
@@ -79,11 +84,11 @@ public class OwnersDataset {
 	}
 	
 	public static Owner ownerWithPets() {
-		return owners()[1];
+		return owner(OWNER_WITH_PETS_LOGIN);
 	}
 	
 	public static Owner ownerWithoutPets() {
-		return owners()[3];
+		return owner(OWNER_WITHOUT_PETS_LOGIN);
 	}
 	
 	public static Pet anyPet() {
@@ -98,12 +103,24 @@ public class OwnersDataset {
 		return new Pet("Lorenacat", AnimalType.CAT, new Date(946684861000L), owner);
 	}
 	
+	public static String anyLogin() {
+		return EXISTENT_LOGIN;
+	}
+	
 	public static String existentLogin() {
-		return "pepe";
+		return EXISTENT_LOGIN;
+	}
+	
+	public static String nonExistentLogin() {
+		return NON_EXISTENT_LOGIN;
 	}
 	
 	public static String existentPetName() {
 		return "Pepecat";
+	}
+	
+	public static String nonExistentPetName() {
+		return "NonExistentPet";
 	}
 	
 	public static int existentPetId() {
@@ -112,5 +129,10 @@ public class OwnersDataset {
 	
 	public static int nonExistentPetId() {
 		return 1000000;
+	}
+
+	public static Owner nonExistentOwner() {
+		final String login = nonExistentLogin();
+		return new Owner(login, login + "pass");
 	}
 }

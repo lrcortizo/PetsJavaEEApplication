@@ -10,7 +10,9 @@
 
 	<modules>
 		<module>domain</module>
+		<module>tests</module>
 		<module>service</module>
+		<module>rest</module>
 	</modules>
 
 	<properties>
@@ -24,6 +26,8 @@
 		<!-- BOM versions -->
 		<javaee.api.version>7.0</javaee.api.version>
 		<arquillian.version>1.1.9.Final</arquillian.version>
+		<arquillian.rest.version>1.0.0.Alpha3</arquillian.rest.version>
+		<arquillian.selenium.version>2.47.1</arquillian.selenium.version>
 		
 		<!-- Dependencies versions -->
 		<wildfly.version>8.2.1.Final</wildfly.version>
@@ -36,8 +40,8 @@
 		<mysql.connector.java.version>5.1.21</mysql.connector.java.version>
 		<slf4j.version>1.5.10</slf4j.version>
 		<easymock.version>3.4</easymock.version>
-		<arquillian.glassfish.embedded.version>1.0.0.CR4</arquillian.glassfish.embedded.version>
-		<glassfish.embedded.all.version>4.1</glassfish.embedded.all.version>
+		<resteasy.version>3.0.13.Final</resteasy.version>
+		<graphene.webdrive.version>2.1.0.Alpha2</graphene.webdrive.version>
 		
 		<!-- Plugins versions -->
 		<wildfly.maven.plugin.version>1.1.0.Alpha1</wildfly.maven.plugin.version>
@@ -61,6 +65,13 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+			<dependency>
+				<groupId>org.jboss.arquillian.selenium</groupId>
+				<artifactId>selenium-bom</artifactId>
+				<version>${arquillian.selenium.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 			
 			<!-- Modules -->
 			<dependency>
@@ -72,6 +83,17 @@
 				<groupId>${project.groupId}</groupId>
 				<artifactId>service</artifactId>
 				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>rest</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>tests</artifactId>
+				<version>${project.version}</version>
+				<scope>test</scope>
 			</dependency>
 			
 			<!-- General -->
@@ -103,6 +125,23 @@
 				<version>${arquillian.persistence.dbunit.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.jboss.arquillian.extension</groupId>
+				<artifactId>arquillian-rest-client-impl-3x</artifactId>
+				<version>${arquillian.rest.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.resteasy</groupId>
+				<artifactId>resteasy-jackson-provider</artifactId>
+				<version>${resteasy.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.arquillian.graphene</groupId>
+				<artifactId>graphene-webdriver</artifactId>
+				<version>${graphene.webdrive.version}</version>
+				<type>pom</type>
+			</dependency>
+			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
 				<version>${mysql.connector.java}</version>
@@ -131,17 +170,6 @@
 				<groupId>org.wildfly</groupId>
 				<artifactId>wildfly-arquillian-container-embedded</artifactId>
 				<version>${wildfly.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.jboss.arquillian.container</groupId>
-				<artifactId>arquillian-glassfish-embedded-3.1</artifactId>
-				<version>${arquillian.glassfish.embedded.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.glassfish.main.extras</groupId>
-				<artifactId>glassfish-embedded-all</artifactId>
-				<version>${glassfish.embedded.all.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
