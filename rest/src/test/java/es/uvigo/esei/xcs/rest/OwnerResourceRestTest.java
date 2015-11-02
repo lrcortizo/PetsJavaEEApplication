@@ -6,10 +6,11 @@ import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.EXISTENT_LOGIN;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.NON_EXISTENT_LOGIN;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.OWNER_WITHOUT_PETS_LOGIN;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.OWNER_WITH_PETS_LOGIN;
+import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.existentOwner;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.newOwnerWithFreshPets;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.newOwnerWithPersistentPets;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.newOwnerWithoutPets;
-import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.owner;
+import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.newPasswordForExistentOwner;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.owners;
 import static es.uvigo.esei.xcs.http.util.HasHttpStatus.hasHttpStatus;
 import static javax.ws.rs.client.Entity.json;
@@ -47,7 +48,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import es.uvigo.esei.xcs.domain.entities.Owner;
-import es.uvigo.esei.xcs.domain.entities.OwnersDataset;
 import es.uvigo.esei.xcs.rest.GenericTypes.ListOwnerType;
 import es.uvigo.esei.xcs.service.OwnerService;
 
@@ -87,7 +87,7 @@ public class OwnerResourceRestTest {
 	    assertThat(response, hasHttpStatus(OK));
 	    
 	    final Owner owner = response.readEntity(Owner.class);
-	    final Owner expected = owner("pepe");
+	    final Owner expected = existentOwner();
 	    
 		assertThat(owner, is(equalsToOwner(expected)));
 	}
@@ -217,8 +217,8 @@ public class OwnerResourceRestTest {
 	public void testUpdatePassword(
 		@ArquillianResteasyResource(BASE_PATH) ResteasyWebTarget webTarget
 	) throws Exception {
-		final Owner owner = OwnersDataset.anyOwner();
-		owner.changePassword("newpassword");
+		final Owner owner = existentOwner();
+		owner.changePassword(newPasswordForExistentOwner());
 	    
 	    final Response response = webTarget.request().put(json(owner));
 

@@ -2,6 +2,9 @@ package es.uvigo.esei.xcs.service.util.security;
 
 import java.util.function.Supplier;
 
+import javax.ejb.Local;
+
+@Local
 public interface RoleCaller {
 	public <V> V call(Supplier<V> supplier);
 	

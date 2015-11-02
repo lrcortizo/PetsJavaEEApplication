@@ -48,7 +48,7 @@ public class PetServiceIntegrationTest {
 	private PetService facade;
 
 	@EJB(beanName = "owner-caller")
-	private RoleCaller owner;
+	private RoleCaller asOwner;
 	
 	@Inject
 	private TestPrincipal principal;
@@ -71,9 +71,9 @@ public class PetServiceIntegrationTest {
 	public void testGet() throws LoginException {
 		final int id = existentPetId();
 		final Pet pet = pet(id);
-		this.principal.setName(pet.getOwner().getLogin());
+		principal.setName(pet.getOwner().getLogin());
 		
-		final Pet actual = this.owner.call(() -> facade.get(id));
+		final Pet actual = asOwner.call(() -> facade.get(id));
 		
 		assertThat(actual, equalsToPet(pet));
 	}
@@ -83,9 +83,9 @@ public class PetServiceIntegrationTest {
 	public void testGetBadId() throws LoginException {
 		final int id = nonExistentPetId();
 		
-		this.principal.setName(ownerWithoutPets().getLogin());
+		principal.setName(ownerWithoutPets().getLogin());
 		
-		final Pet actual = this.owner.call(() -> facade.get(id));
+		final Pet actual = asOwner.call(() -> facade.get(id));
 		
 		assertThat(actual, is(nullValue()));
 	}
@@ -97,9 +97,9 @@ public class PetServiceIntegrationTest {
 		final Owner ownerWithPets = ownerWithPets();
 		final int petId = ownerWithPets.getPets().iterator().next().getId();
 		
-		this.principal.setName(ownerWithoutPets.getLogin());
+		principal.setName(ownerWithoutPets.getLogin());
 		
-		this.owner.run(() -> facade.get(petId));
+		asOwner.run(() -> facade.get(petId));
 	}
 
 	@Test
@@ -107,9 +107,9 @@ public class PetServiceIntegrationTest {
 	public void testList() throws LoginException {
 		final Owner owner = ownerWithPets();
 		final Pet[] ownedPets = owner.getPets().toArray(new Pet[0]);
-		this.principal.setName(owner.getLogin());
+		principal.setName(owner.getLogin());
 		
-		final List<Pet> pets = this.owner.call(() -> facade.list());
+		final List<Pet> pets = asOwner.call(() -> facade.list());
 		
 		assertThat(pets, containsPetsInAnyOrder(ownedPets));
 	}
@@ -119,9 +119,9 @@ public class PetServiceIntegrationTest {
 	public void testListNoPets() throws LoginException {
 		final Owner owner = ownerWithoutPets();
 		
-		this.principal.setName(owner.getLogin());
+		principal.setName(owner.getLogin());
 		
-		final List<Pet> pets = this.owner.call(() -> facade.list());
+		final List<Pet> pets = asOwner.call(() -> facade.list());
 		
 		assertThat(pets, is(empty()));
 	}
@@ -130,19 +130,19 @@ public class PetServiceIntegrationTest {
 	@ShouldMatchDataSet({ "owners.xml", "owners-create-pet.xml" })
 	public void testCreate() {
 		final Owner owner = ownerWithoutPets();
-		this.principal.setName(owner.getLogin());
+		principal.setName(owner.getLogin());
 		
 		final Pet pet = newPet();
 		
-		this.owner.call(() -> facade.create(pet));
+		asOwner.call(() -> facade.create(pet));
 	}
 	
 	@Test(expected = EJBTransactionRolledbackException.class)
 	@ShouldMatchDataSet({ "owners.xml" })
 	public void testCreateNull() {
-		this.principal.setName(ownerWithoutPets().getLogin());
+		principal.setName(ownerWithoutPets().getLogin());
 		
-		this.owner.run(() -> facade.create(null));
+		asOwner.run(() -> facade.create(null));
 	}
 	
 	@Test(expected = EJBTransactionRolledbackException.class)
@@ -151,11 +151,11 @@ public class PetServiceIntegrationTest {
 		final Owner owner = ownerWithoutPets();
 		final Owner otherOwner = ownerWithPets();
 		
-		this.principal.setName(owner.getLogin());
+		principal.setName(owner.getLogin());
 		
 		final Pet pet = newPetWithOwner(otherOwner);
 		
-		this.owner.run(() -> facade.create(pet));
+		asOwner.run(() -> facade.create(pet));
 	}
 	
 	@Test
@@ -164,30 +164,30 @@ public class PetServiceIntegrationTest {
 		final int id = existentPetId();
 		final Pet pet = pet(id);
 		
-		this.principal.setName(pet.getOwner().getLogin());
+		principal.setName(pet.getOwner().getLogin());
 		
 		pet.setName("UpdateName");
 		pet.setAnimal(AnimalType.BIRD);
 		pet.setBirth(new Date(946771261000L));
 		
-		this.owner.run(() -> facade.update(pet));
+		asOwner.run(() -> facade.update(pet));
 	}
 
 	@Test
 	@ShouldMatchDataSet({ "owners.xml", "owners-create-pet.xml" })
 	public void testUpdateNewPetWithOwner() {
 		final Owner owner = ownerWithoutPets();
-		this.principal.setName(owner.getLogin());
+		principal.setName(owner.getLogin());
 		
 		final Pet pet = newPetWithOwner(owner);
 		
-		this.owner.call(() -> facade.update(pet));
+		asOwner.call(() -> facade.update(pet));
 	}
 	
 	@Test(expected = EJBTransactionRolledbackException.class)
 	@ShouldMatchDataSet("owners.xml")
 	public void testUpdateNull() throws LoginException {
-		this.owner.run(() -> facade.update(null));
+		asOwner.run(() -> facade.update(null));
 	}
 	
 	@Test(expected = EJBTransactionRolledbackException.class)
@@ -196,11 +196,11 @@ public class PetServiceIntegrationTest {
 		final Owner owner = ownerWithoutPets();
 		final Owner otherOwner = ownerWithPets();
 		
-		this.principal.setName(owner.getLogin());
+		principal.setName(owner.getLogin());
 		
 		final Pet pet = otherOwner.getPets().iterator().next();
 		
-		this.owner.run(() -> facade.update(pet));
+		asOwner.run(() -> facade.update(pet));
 	}
 
 	@Test(expected = EJBTransactionRolledbackException.class)
@@ -209,11 +209,11 @@ public class PetServiceIntegrationTest {
 		final int id = existentPetId();
 		final Pet pet = pet(id);
 		
-		this.principal.setName(pet.getOwner().getLogin());
+		principal.setName(pet.getOwner().getLogin());
 		pet.setOwner(null);
 		
 		
-		this.owner.run(() -> facade.update(pet));
+		asOwner.run(() -> facade.update(pet));
 	}
 
 	@Test
@@ -221,9 +221,9 @@ public class PetServiceIntegrationTest {
 	public void testRemove() throws LoginException {
 		final int id = existentPetId();
 		final Pet pet = pet(id);
-		this.principal.setName(pet.getOwner().getLogin());
+		principal.setName(pet.getOwner().getLogin());
 		
-		this.owner.run(() -> facade.remove(id));
+		asOwner.run(() -> facade.remove(id));
 	}
 
 	@Test(expected = EJBTransactionRolledbackException.class)
@@ -231,9 +231,9 @@ public class PetServiceIntegrationTest {
 	public void testRemoveBadId() throws LoginException {
 		final int id = nonExistentPetId();
 		
-		this.principal.setName(ownerWithoutPets().getLogin());
+		principal.setName(ownerWithoutPets().getLogin());
 		
-		this.owner.run(() -> facade.remove(id));
+		asOwner.run(() -> facade.remove(id));
 	}
 
 	@Test(expected = EJBTransactionRolledbackException.class)
@@ -243,8 +243,8 @@ public class PetServiceIntegrationTest {
 		final Owner ownerWithPets = ownerWithPets();
 		final int petId = ownerWithPets.getPets().iterator().next().getId();
 		
-		this.principal.setName(ownerWithoutPets.getLogin());
+		principal.setName(ownerWithoutPets.getLogin());
 		
-		this.owner.run(() -> facade.remove(petId));
+		asOwner.run(() -> facade.remove(petId));
 	}
 }

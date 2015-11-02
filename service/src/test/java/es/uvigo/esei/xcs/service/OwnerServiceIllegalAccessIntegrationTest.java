@@ -36,7 +36,7 @@ public class OwnerServiceIllegalAccessIntegrationTest {
 	private OwnerService facade;
 
 	@EJB(beanName = "owner-caller")
-	private RoleCaller owner;
+	private RoleCaller asOwner;
 	
 	@Deployment
 	public static Archive<?> createDeployment() {
@@ -88,36 +88,36 @@ public class OwnerServiceIllegalAccessIntegrationTest {
 
 	@Test(expected = EJBTransactionRolledbackException.class)
 	public void testGetRoleOwner() {
-		this.owner.run(this::testGetNoRole);
+		asOwner.run(this::testGetNoRole);
 	}
 
 	@Test(expected = EJBTransactionRolledbackException.class)
 	public void testListRoleOwner() {
-		this.owner.run(this::testListNoRole);
+		asOwner.run(this::testListNoRole);
 	}
 
 	@Test(expected = EJBTransactionRolledbackException.class)
 	public void testFindByPetNameRoleOwner() {
-		this.owner.run(this::testFindByPetNameNoRole);
+		asOwner.run(this::testFindByPetNameNoRole);
 	}
 
 	@Test(expected = EJBTransactionRolledbackException.class)
 	public void testCreateRoleOwner() {
-		this.owner.run(this::testCreateNoRole);
+		asOwner.run(this::testCreateNoRole);
 	}
 
 	@Test(expected = EJBTransactionRolledbackException.class)
 	public void testUpdateRoleOwner() {
-		this.owner.run(this::testUpdateNoRole);
+		asOwner.run(this::testUpdateNoRole);
 	}
 
 	@Test(expected = EJBTransactionRolledbackException.class)
 	public void testRemoveRoleOwner() {
-		this.owner.run(this::testRemoveNoRole);
+		asOwner.run(this::testRemoveNoRole);
 	}
 
 	@Test(expected = EJBTransactionRolledbackException.class)
 	public void testGetPetsRoleOwner() {
-		this.owner.run(this::testGetPetsNoRole);
+		asOwner.run(this::testGetPetsNoRole);
 	}
 }

@@ -3,8 +3,10 @@ package es.uvigo.esei.xcs.domain.entities;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toSet;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 public class OwnersDataset {
@@ -13,16 +15,9 @@ public class OwnersDataset {
 	public static final String OWNER_WITH_PETS_LOGIN = "juan";
 	public static final String OWNER_WITHOUT_PETS_LOGIN = "lorena";
 
-	public static Owner owner(String login) {
+	public static Owner ownerWithLogin(String login) {
 		return stream(owners())
 			.filter(owner -> owner.getLogin().equals(login))
-			.findFirst()
-		.orElseThrow(IllegalArgumentException::new);
-	}
-	
-	public static Pet pet(int id) {
-		return stream(pets())
-			.filter(pet -> pet.getId() == id)
 			.findFirst()
 		.orElseThrow(IllegalArgumentException::new);
 	}
@@ -52,6 +47,36 @@ public class OwnersDataset {
 		};
 	}
 	
+	public static String petNameWithMultipleOwners() {
+		return "Max";
+	}
+	
+	public static String petNameWithSingleOwner() {
+		return "Juandog";
+	}
+	
+	public static Owner[] ownersOf(String petName) {
+		final List<Owner> owners = new ArrayList<>();
+		
+		for (Owner owner : owners()) {
+			for (Pet pet : owner.getPets()) {
+				if (pet.getName().equals(petName)) {
+					owners.add(owner);
+					break;
+				}
+			}
+		}
+		
+		return owners.toArray(new Owner[owners.size()]);
+	}
+	
+	public static Pet pet(int id) {
+		return stream(pets())
+			.filter(pet -> pet.getId() == id)
+			.findFirst()
+		.orElseThrow(IllegalArgumentException::new);
+	}
+	
 	public static Pet[] pets() {
 		return stream(owners())
 			.map(Owner::getPets)
@@ -60,11 +85,19 @@ public class OwnersDataset {
 	}
 	
 	public static Owner newOwnerWithoutPets() {
-		return new Owner("jacinto", "jacintopass");
+		return new Owner(newOwnerLogin(), newOwnerPassword());
+	}
+	
+	public static String newOwnerLogin() {
+		return "jacinto";
+	}
+	
+	public static String newOwnerPassword() {
+		return "jacintopass";
 	}
 	
 	public static Owner newOwnerWithFreshPets() {
-		return new Owner("jacinto", "jacintopass",
+		return new Owner(newOwnerLogin(), newOwnerPassword(),
 			new Pet("Jacintocat", AnimalType.CAT, new Date(946684861000L)),
 			new Pet("Jacintodo", AnimalType.DOG, new Date(946684861000L)),
 			new Pet("Jacintobird", AnimalType.BIRD, new Date(946684861000L))
@@ -72,23 +105,47 @@ public class OwnersDataset {
 	}
 	
 	public static Owner newOwnerWithPersistentPets() {
-		return new Owner("jacinto", "jacintopass",
+		return new Owner(newOwnerLogin(), newOwnerPassword(),
 			new Pet(7, "Jacintocat", AnimalType.CAT, new Date(946684861000L)),
 			new Pet(8, "Jacintodo", AnimalType.DOG, new Date(946684861000L)),
 			new Pet(9, "Jacintobird", AnimalType.BIRD, new Date(946684861000L))
 		);
 	}
 	
+	public static String anyLogin() {
+		return existentLogin();
+	}
+	
+	public static String existentLogin() {
+		return EXISTENT_LOGIN;
+	}
+	
+	public static String nonExistentLogin() {
+		return NON_EXISTENT_LOGIN;
+	}
+	
 	public static Owner anyOwner() {
-		return ownerWithPets();
+		return ownerWithLogin(anyLogin());
+	}
+
+	public static Owner existentOwner() {
+		return ownerWithLogin(existentLogin());
+	}
+	
+	public static String newPasswordForExistentOwner() {
+		return "newpassword";
+	}
+
+	public static Owner nonExistentOwner() {
+		return new Owner(nonExistentLogin(), nonExistentLogin() + "pass");
 	}
 	
 	public static Owner ownerWithPets() {
-		return owner(OWNER_WITH_PETS_LOGIN);
+		return ownerWithLogin(OWNER_WITH_PETS_LOGIN);
 	}
 	
 	public static Owner ownerWithoutPets() {
-		return owner(OWNER_WITHOUT_PETS_LOGIN);
+		return ownerWithLogin(OWNER_WITHOUT_PETS_LOGIN);
 	}
 	
 	public static Pet anyPet() {
@@ -101,18 +158,6 @@ public class OwnersDataset {
 	
 	public static Pet newPetWithOwner(Owner owner) {
 		return new Pet("Lorenacat", AnimalType.CAT, new Date(946684861000L), owner);
-	}
-	
-	public static String anyLogin() {
-		return EXISTENT_LOGIN;
-	}
-	
-	public static String existentLogin() {
-		return EXISTENT_LOGIN;
-	}
-	
-	public static String nonExistentLogin() {
-		return NON_EXISTENT_LOGIN;
 	}
 	
 	public static String existentPetName() {
@@ -129,10 +174,5 @@ public class OwnersDataset {
 	
 	public static int nonExistentPetId() {
 		return 1000000;
-	}
-
-	public static Owner nonExistentOwner() {
-		final String login = nonExistentLogin();
-		return new Owner(login, login + "pass");
 	}
 }

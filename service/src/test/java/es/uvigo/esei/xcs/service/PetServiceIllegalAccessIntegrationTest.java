@@ -41,10 +41,10 @@ public class PetServiceIllegalAccessIntegrationTest {
 	private TestPrincipal principal;
 
 	@EJB(beanName = "admin-caller")
-	private RoleCaller admin;
+	private RoleCaller asAdmin;
 
 	@EJB(beanName = "owner-caller")
-	private RoleCaller owner;
+	private RoleCaller asOwner;
 	
 	@Deployment
 	public static Archive<?> createDeployment() {
@@ -86,27 +86,27 @@ public class PetServiceIllegalAccessIntegrationTest {
 	
 	@Test(expected = EJBTransactionRolledbackException.class)
 	public void testGetRoleAdmin() {
-		this.admin.run(this::testGetNoRole);
+		asAdmin.run(this::testGetNoRole);
 	}
 	
 	@Test(expected = EJBTransactionRolledbackException.class)
 	public void testListRoleAdmin() {
-		this.admin.run(this::testListNoRole);
+		asAdmin.run(this::testListNoRole);
 	}
 	
 	@Test(expected = EJBTransactionRolledbackException.class)
 	public void testCreateRoleAdmin() {
-		this.admin.run(this::testCreateNoRole);
+		asAdmin.run(this::testCreateNoRole);
 	}
 	
 	@Test(expected = EJBTransactionRolledbackException.class)
 	public void testUpdateRoleAdmin() {
-		this.admin.run(this::testUpdateNoRole);
+		asAdmin.run(this::testUpdateNoRole);
 	}
 	
 	@Test(expected = EJBTransactionRolledbackException.class)
 	public void testRemoveRoleAdmin() {
-		this.admin.run(this::testRemoveNoRole);
+		asAdmin.run(this::testRemoveNoRole);
 	}
 	
 	@Test(expected = EJBTransactionRolledbackException.class)
@@ -118,7 +118,7 @@ public class PetServiceIllegalAccessIntegrationTest {
 
 		principal.setName(owner2.getLogin());
 		
-		this.owner.run(() -> this.facade.get(pet1.getId()));
+		asOwner.run(() -> facade.get(pet1.getId()));
 	}
 	
 	@Test(expected = EJBTransactionRolledbackException.class)
@@ -130,7 +130,7 @@ public class PetServiceIllegalAccessIntegrationTest {
 
 		principal.setName(owner2.getLogin());
 		
-		this.owner.run(() -> this.facade.create(pet));
+		asOwner.run(() -> facade.create(pet));
 	}
 	
 	@Test(expected = EJBTransactionRolledbackException.class)
@@ -143,7 +143,7 @@ public class PetServiceIllegalAccessIntegrationTest {
 
 		principal.setName(owner2.getLogin());
 		
-		this.owner.run(() -> this.facade.update(pet1));
+		asOwner.run(() -> facade.update(pet1));
 	}
 	
 	@Test(expected = EJBTransactionRolledbackException.class)
@@ -155,6 +155,6 @@ public class PetServiceIllegalAccessIntegrationTest {
 
 		principal.setName(owner2.getLogin());
 		
-		this.owner.run(() -> this.facade.remove(pet1.getId()));
+		asOwner.run(() -> facade.remove(pet1.getId()));
 	}
 }

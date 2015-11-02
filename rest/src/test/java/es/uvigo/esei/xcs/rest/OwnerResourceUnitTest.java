@@ -181,7 +181,7 @@ public class OwnerResourceUnitTest extends EasyMockSupport {
 
 	@Test
 	public void testDelete() {
-		final String login = OwnersDataset.anyLogin();
+		final String login = anyLogin();
 		
 		facade.remove(login);
 		

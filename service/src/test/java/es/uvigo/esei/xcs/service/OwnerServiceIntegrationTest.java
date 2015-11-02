@@ -3,18 +3,24 @@ package es.uvigo.esei.xcs.service;
 import static es.uvigo.esei.xcs.domain.entities.IsEqualsToOwner.containsOwnersInAnyOrder;
 import static es.uvigo.esei.xcs.domain.entities.IsEqualsToOwner.equalsToOwner;
 import static es.uvigo.esei.xcs.domain.entities.IsEqualsToPet.containsPetsInAnyOrder;
-import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.anyOwner;
+import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.existentLogin;
+import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.existentOwner;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.newOwnerWithFreshPets;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.newOwnerWithPersistentPets;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.newOwnerWithoutPets;
+import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.newPasswordForExistentOwner;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.nonExistentLogin;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.nonExistentPetName;
-import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.owner;
+import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.ownerWithLogin;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.ownerWithPets;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.ownerWithoutPets;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.owners;
+import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.ownersOf;
+import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.petNameWithMultipleOwners;
+import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.petNameWithSingleOwner;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
@@ -49,7 +55,7 @@ public class OwnerServiceIntegrationTest {
 	private OwnerService facade;
 	
 	@EJB(beanName = "admin-caller")
-	private RoleCaller admin;
+	private RoleCaller asAdmin;
 	
 	@Deployment
 	public static Archive<?> createDeployment() {
@@ -67,12 +73,11 @@ public class OwnerServiceIntegrationTest {
 	@Test
 	@ShouldMatchDataSet("owners.xml")
 	public void testGetOwner() {
-		final String login = "pepe";
-		final Owner pepe = owner(login);
+		final String login = existentLogin();
 		
-		final Owner actual = admin.call(() -> facade.get(login));
+		final Owner actual = asAdmin.call(() -> facade.get(login));
 		
-		assertThat(actual, is(equalsToOwner(pepe)));
+		assertThat(actual, is(equalsToOwner(ownerWithLogin(login))));
 	}
 
 	@Test
@@ -80,7 +85,7 @@ public class OwnerServiceIntegrationTest {
 	public void testGetOwnerNonExistent() {
 		final String login = nonExistentLogin();
 		
-		final Owner actual = admin.call(() -> facade.get(login));
+		final Owner actual = asAdmin.call(() -> facade.get(login));
 		
 		assertThat(actual, is(nullValue()));
 	}
@@ -88,13 +93,13 @@ public class OwnerServiceIntegrationTest {
 	@Test(expected = EJBTransactionRolledbackException.class)
 	@ShouldMatchDataSet("owners.xml")
 	public void testGetOwnerNull() {
-		admin.call(() -> facade.get(null));
+		asAdmin.call(() -> facade.get(null));
 	}
 
 	@Test
 	@ShouldMatchDataSet("owners.xml")
 	public void testList() {
-		final List<Owner> actual = admin.call(() -> facade.list());
+		final List<Owner> actual = asAdmin.call(() -> facade.list());
 		
 		assertThat(actual, is(containsOwnersInAnyOrder(owners())));
 	}
@@ -102,23 +107,23 @@ public class OwnerServiceIntegrationTest {
 	@Test
 	@ShouldMatchDataSet("owners.xml")
 	public void testFindByPetName() {
-		final String pet = "Juandog";
+		final String petName = petNameWithSingleOwner();
+		final Owner owner = ownersOf(petName)[0];
 		
-		final List<Owner> owners = admin.call(() -> facade.findByPetName(pet));
+		final List<Owner> owners = asAdmin.call(() -> facade.findByPetName(petName));
 		
-		final Owner owner = owners.get(0);
-		final Owner juan = owner("juan");
-		assertThat(owner, is(equalsToOwner(juan)));
+		assertThat(owners, hasSize(1));
+		assertThat(owners.get(0), is(equalsToOwner(owner)));
 	}
 
 	@Test
 	@ShouldMatchDataSet("owners.xml")
 	public void testFindByPetNameMultipleOwners() {
-		final String pet = "Max";
+		final String petName = petNameWithMultipleOwners();
 		
-		final List<Owner> owners = admin.call(() -> facade.findByPetName(pet));
+		final List<Owner> owners = asAdmin.call(() -> facade.findByPetName(petName));
 		
-		final Owner[] expectedOwners = owners("juan", "ana");
+		final Owner[] expectedOwners = ownersOf(petName);
 		
 		assertThat(owners, containsOwnersInAnyOrder(expectedOwners));
 	}
@@ -128,7 +133,7 @@ public class OwnerServiceIntegrationTest {
 	public void testFindByPetNameNoPet() {
 		final String pet = nonExistentPetName();
 		
-		final List<Owner> owners = admin.call(() -> facade.findByPetName(pet));
+		final List<Owner> owners = asAdmin.call(() -> facade.findByPetName(pet));
 		
 		assertThat(owners, is(empty()));
 	}
@@ -136,7 +141,7 @@ public class OwnerServiceIntegrationTest {
 	@Test(expected = EJBTransactionRolledbackException.class)
 	@ShouldMatchDataSet("owners.xml")
 	public void testFindByPetNameNull() {
-		admin.run(() -> facade.findByPetName(null));
+		asAdmin.run(() -> facade.findByPetName(null));
 	}
 
 	@Test
@@ -144,7 +149,7 @@ public class OwnerServiceIntegrationTest {
 	public void testCreateWithoutPets() {
 		final Owner newOwner = newOwnerWithoutPets();
 		
-		final Owner actual = admin.call(() -> facade.create(newOwner));
+		final Owner actual = asAdmin.call(() -> facade.create(newOwner));
 		
 		assertThat(actual, is(equalsToOwner(newOwner)));
 	}
@@ -152,7 +157,7 @@ public class OwnerServiceIntegrationTest {
 	@Test
 	@ShouldMatchDataSet({"owners.xml", "owners-create-with-pets.xml"})
 	public void testCreateWithPets() {
-		final Owner actual = admin.call(() -> facade.create(newOwnerWithFreshPets()));
+		final Owner actual = asAdmin.call(() -> facade.create(newOwnerWithFreshPets()));
 		
 		assertThat(actual, is(equalsToOwner(newOwnerWithPersistentPets())));
 	}
@@ -160,22 +165,22 @@ public class OwnerServiceIntegrationTest {
 	@Test(expected = EJBTransactionRolledbackException.class)
 	@ShouldMatchDataSet("owners.xml")
 	public void testCreateExistentLogin() {
-		admin.run(() -> facade.create(anyOwner()));
+		asAdmin.run(() -> facade.create(existentOwner()));
 	}
 
 	@Test(expected = EJBTransactionRolledbackException.class)
 	@ShouldMatchDataSet("owners.xml")
 	public void testCreateNull() {
-		admin.call(() -> facade.create(null));
+		asAdmin.call(() -> facade.create(null));
 	}
 
 	@Test
 	@ShouldMatchDataSet("owners-update-password.xml")
 	public void testUpdatePassword() {
-		final Owner owner = anyOwner();
-		owner.changePassword("newpassword");
+		final Owner owner = existentOwner();
+		owner.changePassword(newPasswordForExistentOwner());
 		
-		admin.run(() -> facade.update(owner));
+		asAdmin.run(() -> facade.update(owner));
 	}
 
 	@Test
@@ -183,7 +188,7 @@ public class OwnerServiceIntegrationTest {
 	public void testUpdateNewOwnerWithoutPets() {
 		final Owner newOwner = newOwnerWithoutPets();
 		
-		final Owner actual = admin.call(() -> facade.update(newOwner));
+		final Owner actual = asAdmin.call(() -> facade.update(newOwner));
 		
 		assertThat(actual, is(equalsToOwner(newOwner)));
 	}
@@ -191,7 +196,7 @@ public class OwnerServiceIntegrationTest {
 	@Test
 	@ShouldMatchDataSet({"owners.xml", "owners-create-with-pets.xml"})
 	public void testUpdateNewOwnerWithPets() {
-		final Owner actual = admin.call(() -> facade.update(newOwnerWithFreshPets()));
+		final Owner actual = asAdmin.call(() -> facade.update(newOwnerWithFreshPets()));
 		
 		assertThat(actual, is(equalsToOwner(newOwnerWithPersistentPets())));
 	}
@@ -199,25 +204,25 @@ public class OwnerServiceIntegrationTest {
 	@Test
 	@ShouldMatchDataSet("owners-remove-without-pets.xml")
 	public void testRemoveWithoutPets() {
-		admin.run(() -> facade.remove(ownerWithoutPets().getLogin()));
+		asAdmin.run(() -> facade.remove(ownerWithoutPets().getLogin()));
 	}
 
 	@Test
 	@ShouldMatchDataSet("owners-remove-with-pets.xml")
 	public void testRemoveWithPets() {
-		admin.run(() -> facade.remove(ownerWithPets().getLogin()));
+		asAdmin.run(() -> facade.remove(ownerWithPets().getLogin()));
 	}
 
 	@Test(expected = EJBTransactionRolledbackException.class)
 	@ShouldMatchDataSet("owners.xml")
 	public void testRemoveNonExistentOwner() {
-		admin.run(() -> facade.remove(nonExistentLogin()));
+		asAdmin.run(() -> facade.remove(nonExistentLogin()));
 	}
 
 	@Test(expected = EJBTransactionRolledbackException.class)
 	@ShouldMatchDataSet("owners.xml")
 	public void testRemoveNull() {
-		admin.run(() -> facade.remove(null));
+		asAdmin.run(() -> facade.remove(null));
 	}
 
 	@Test
@@ -226,7 +231,7 @@ public class OwnerServiceIntegrationTest {
 		final Owner owner = ownerWithPets();
 		final Pet[] ownedPets = owner.getPets().toArray(new Pet[0]);
 		
-		final List<Pet> pets = admin.call(() -> facade.getPets(owner.getLogin()));
+		final List<Pet> pets = asAdmin.call(() -> facade.getPets(owner.getLogin()));
 		
 		assertThat(pets, containsPetsInAnyOrder(ownedPets));
 	}
@@ -236,7 +241,7 @@ public class OwnerServiceIntegrationTest {
 	public void testGetPetsNoPets() {
 		final Owner owner = ownerWithoutPets();
 		
-		final List<Pet> pets = admin.call(() -> facade.getPets(owner.getLogin()));
+		final List<Pet> pets = asAdmin.call(() -> facade.getPets(owner.getLogin()));
 		
 		assertThat(pets, is(empty()));
 	}
@@ -244,12 +249,12 @@ public class OwnerServiceIntegrationTest {
 	@Test(expected = EJBTransactionRolledbackException.class)
 	@ShouldMatchDataSet("owners.xml")
 	public void testGetPetsNonExistentOwner() {
-		admin.call(() -> facade.getPets(nonExistentLogin()));
+		asAdmin.call(() -> facade.getPets(nonExistentLogin()));
 	}
 
 	@Test(expected = EJBTransactionRolledbackException.class)
 	@ShouldMatchDataSet("owners.xml")
 	public void testGetPetsNull() {
-		admin.call(() -> facade.getPets(null));
+		asAdmin.call(() -> facade.getPets(null));
 	}
 }
