@@ -22,7 +22,7 @@ must be available). We will work with Git to get updates of these sample.
 Concretely, we will work with a Git repository inside
 [our Gitlab server](http://sing.ei.uvigo.es/dt/gitlab).
 
-    Git url: `http://sing.ei.uvigo.es/dt/gitlab/dgss/xcs-sample.git`
+    Git URL: `http://sing.ei.uvigo.es/dt/gitlab/dgss/xcs-sample.git`
 
 ### Eclipse
 You can use any other IDE, such as IntelliJ IDEA or NetBeans, as long as they
@@ -38,7 +38,143 @@ Open Eclipse Mars JEE and import your Maven project with
 
 Select your source code folder (where the `pom.xml` should be placed)
 
-Eclipse should then import 2 projects (`xcs-sample` and `domain`)
+Eclipse should then import a parent project (`xcs-sample`) and 6 child projects
+(`tests`, `domain`, `service`, `rest`, `jsf` and `ear`).
+
+### MySQL
+In order to run the tests with the `wildfly-embedded-mysql` profile (more about
+this in the **Sample 2** section) and to run the application, we need a MySQL
+server.
+
+The server can be installed as usual, but it must contain the `xcs` database and
+the user `xcs` identified by `xcs` should have all privileges on this database.
+You can do this by executing the following commands:
+```sql
+CREATE DATABASE xcs;
+GRANT ALL PRIVILEGES ON xcs TO xcs@localhost IDENTIFIED BY 'xcs';
+FLUSH PRIVILEGES;
+```
+
+If you want to add some data to this database to run the application, you can
+also execute:
+```sql
+DROP TABLE IF EXISTS `User`;
+CREATE TABLE `User` (
+  `role` varchar(5) NOT NULL,
+  `login` varchar(100) NOT NULL,
+  `password` varchar(32) NOT NULL,
+  PRIMARY KEY (`login`)
+);
+
+DROP TABLE IF EXISTS `Pet`;
+CREATE TABLE `Pet` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `animal` varchar(4) NOT NULL,
+  `birth` datetime NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `owner` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_6mfctqh1tpytabbk1u4bk1pym` (`owner`),
+  CONSTRAINT `FK_6mfctqh1tpytabbk1u4bk1pym` FOREIGN KEY (`owner`) REFERENCES `User` (`login`)
+);
+
+-- All the passwords are "<login>pass".
+INSERT INTO `User`
+   VALUES ('ADMIN','jose','A3F6F4B40B24E2FD61F08923ED452F34'),
+          ('OWNER','pepe','B43B4D046860B2BD945BCA2597BF9F07'),
+          ('OWNER','juan','B4FBB95580592697DC71488A1F19277E'),
+          ('OWNER','ana','22BEEAE33E9B2657F9610621502CD7A4'),
+          ('OWNER','lorena','05009E420932C21E5A68F5EF1AADD530');
+
+INSERT INTO `Pet` (animal, birth, name, owner)
+   VALUES ('CAT','2000-01-01 01:01:01','Pepecat','pepe'),
+          ('CAT','2000-01-01 01:01:01','Max','juan'),
+          ('DOG','2000-01-01 01:01:01','Juandog','juan'),
+          ('CAT','2000-01-01 01:01:01','Anacat','ana'),
+          ('DOG','2000-01-01 01:01:01','Max','ana'),
+          ('BIRD','2000-01-01 01:01:01','Anabird','ana');
+```
+
+### Wildfly 8
+Before we can run the project, we need to configure a WildFly server to include
+the datasource used by the application and the security configuration.
+
+#### Datasource
+There are several ways to add a datasource to a WildFly server. We are going to
+use the simplest way: add the datasource as a deployment. To do so, you have to
+add a XML file to the `standalone/deployments` folder of the WildFly server with
+the following content:
+```xml
+<datasources xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.ironjacamar.org/doc/schema"
+  xsi:schemaLocation="http://www.ironjacamar.org/doc/schema http://www.ironjacamar.org/doc/schema/datasources_1_1.xsd">
+
+  <datasource jndi-name="java:jboss/datasources/xcs" pool-name="MySQLPool">
+
+      <connection-url>jdbc:mysql://localhost:3306/xcs</connection-url>
+      <driver>mysql-connector-java-5.1.21.jar</driver>
+      <pool>
+          <max-pool-size>30</max-pool-size>
+      </pool>
+      <security>
+          <user-name>xcs</user-name>
+          <password>xcs</password>
+      </security>
+  </datasource>
+</datasources>
+```
+
+In addition, you also have to add to the same folder the MySQL driver that can
+be downloaded from [here](http://central.maven.org/maven2/mysql/mysql-connector-java/5.1.21/mysql-connector-java-5.1.21.jar).
+
+#### Security configuration
+All the WildFly security configuration is done in the
+`standalone/configuration/standalone.xml` file of the server.
+
+Inside the `<security-reamls>` element you have to add:
+```xml
+<security-realm name="RemotingRealm">
+    <authentication>
+        <jaas name="AppRealmLoopThrough"/>
+    </authentication>
+</security-realm>
+```
+
+And inside the `<security-domains>` element you have to add:
+```xml
+<security-domain name="AppRealmLoopThrough" cache-type="default">
+    <authentication>
+        <login-module code="Client" flag="required">
+            <module-option name="multi-threaded" value="true"/>
+        </login-module>
+    </authentication>
+</security-domain>
+<security-domain name="xcs-sample-security-domain">
+    <authentication>
+        <login-module code="Database" flag="required">
+            <module-option name="dsJndiName" value="java:jboss/datasources/xcs"/>
+            <module-option name="principalsQuery" value="SELECT password FROM User WHERE login=?"/>
+            <module-option name="rolesQuery" value="SELECT role, 'Roles' FROM User WHERE login=?"/>
+            <module-option name="hashAlgorithm" value="MD5"/>
+            <module-option name="hashEncoding" value="hex"/>
+            <module-option name="ignorePasswordCase" value="true"/>
+        </login-module>
+    </authentication>
+</security-domain>
+```
+
+#### Deploying the application
+When the `package` goal is run in the `xcs-sample` project, an EAR file is
+generated inside the `target` folder of the `ear` project.
+
+The EAR file contains all the elements of the project (JARs and WARs) and,
+therefore, you only have to deploy this file in the WildFly container to deploy
+the entire application. To do so, you can copy this file to the
+`standalone/deployments` folder of WidlFly.
+
+Once this is done, you can run the WildFly server executing the
+`bin/standalone.sh` script. The application should be running in
+`http://localhost:8080/`
 
 ## Sample 1: Testing entities
 Using JUnit and Hamcrest, we will see how to test JPA entities or any other
@@ -118,9 +254,20 @@ underlying layer.
 Using Arquillian REST Client, we will test the REST API accessing it as real
 HTTP clients.
 
+Tests can be run using the same configuration as explained in *Sample 2*.
+
+When executed, the REST resources can be found in:
+* Owners: `http://localhost:8080/rest/api/owner`
+* Pets: `http://localhost:8080/rest/api/pet`
+
 ## Sample 5: Testing JSF
 Using Arquillian Drone, Arquillian Graphene and Selenium, we will test the JSF
 web interface accessing it as real Web clients.
+
+Tests can be run using the same configuration as explained in *Sample 2*.
+
+When executed, the REST resources can be found in
+`http://localhost:8080/jsf/faces/index.html`.
 
 ## Sample 6: Additional Testing Tools
 Coming soon...
