@@ -13,6 +13,8 @@
 		<module>tests</module>
 		<module>service</module>
 		<module>rest</module>
+		<module>jsf</module>
+		<module>ear</module>
 	</modules>
 
 	<properties>
@@ -22,17 +24,17 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<failOnMissingWebXml>false</failOnMissingWebXml>
-		
+
 		<!-- BOM versions -->
 		<javaee.api.version>7.0</javaee.api.version>
 		<arquillian.version>1.1.9.Final</arquillian.version>
 		<arquillian.rest.version>1.0.0.Alpha3</arquillian.rest.version>
-		<arquillian.selenium.version>2.47.1</arquillian.selenium.version>
-		
+		<arquillian.selenium.version>2.48.2</arquillian.selenium.version>
+
 		<!-- Dependencies versions -->
 		<wildfly.version>8.2.1.Final</wildfly.version>
 		<commons.lang3.version>3.4</commons.lang3.version>
-		
+
 		<!-- Testing dependecies versions -->
 		<junit.version>4.12</junit.version>
 		<hamcrest.version>2.0.0.0</hamcrest.version>
@@ -41,13 +43,14 @@
 		<slf4j.version>1.5.10</slf4j.version>
 		<easymock.version>3.4</easymock.version>
 		<resteasy.version>3.0.13.Final</resteasy.version>
-		<graphene.webdrive.version>2.1.0.Alpha2</graphene.webdrive.version>
-		
+		<graphene.webdrive.version>2.1.0.Alpha3</graphene.webdrive.version>
+
 		<!-- Plugins versions -->
-		<wildfly.maven.plugin.version>1.1.0.Alpha1</wildfly.maven.plugin.version>
+		<wildfly.maven.plugin.version>1.1.0.Alpha4</wildfly.maven.plugin.version>
 		<maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
 		<maven.surefire.plugin.version>2.18.1</maven.surefire.plugin.version>
 		<maven.resources.plugin.version>2.7</maven.resources.plugin.version>
+		<maven.ear.plugin>2.10.1</maven.ear.plugin>
 	</properties>
 
 	<dependencyManagement>
@@ -72,7 +75,7 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-			
+
 			<!-- Modules -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
@@ -91,18 +94,23 @@
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
+				<artifactId>jsf</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
 				<artifactId>tests</artifactId>
 				<version>${project.version}</version>
 				<scope>test</scope>
 			</dependency>
-			
+
 			<!-- General -->
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
 				<version>${commons.lang3.version}</version>
 			</dependency>
-			
+
 			<!-- Testing -->
 			<dependency>
 				<groupId>junit</groupId>
@@ -197,7 +205,13 @@
 					<artifactId>wildfly-maven-plugin</artifactId>
 					<version>${wildfly.maven.plugin.version}</version>
 				</plugin>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-ear-plugin</artifactId>
+					<version>${maven.ear.plugin}</version>
+				</plugin>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -335,7 +349,7 @@
 				</plugins>
 			</build>
 		</profile>
-		
+
 		<profile>
 			<id>wildfly-embedded-mysql</id>
 			<dependencies>

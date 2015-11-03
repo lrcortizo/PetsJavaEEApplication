@@ -1,11 +1,13 @@
 package es.uvigo.esei.xcs.domain.entities;
 
+import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -45,6 +47,33 @@ public class OwnersDataset {
 			),
 			new Owner(OWNER_WITHOUT_PETS_LOGIN, "lorenapass")
 		};
+	}
+	
+	public static Owner[] ownersAnd(Owner ... additionalOwners) {
+		final Owner[] owners = owners();
+		final Owner[] ownersWithNewOwner = new Owner[owners.length + additionalOwners.length];
+		
+		System.arraycopy(owners, 0, ownersWithNewOwner, 0, owners.length);
+		System.arraycopy(additionalOwners, 0, ownersWithNewOwner, owners.length, additionalOwners.length);
+		
+		return ownersWithNewOwner;
+	}
+	
+	public static Owner[] ownersWithout(Owner ... removeOwners) {
+		final List<Owner> owners = new ArrayList<>(asList(owners()));
+
+		for (Owner owner : removeOwners) {
+			final Iterator<Owner> itOwner = owners.iterator();
+			
+			while (itOwner.hasNext()) {
+				if (itOwner.next().getLogin().equals(owner.getLogin())) {
+					itOwner.remove();
+					break;
+				}
+			}
+		}
+		
+		return owners.toArray(new Owner[owners.size()]);
 	}
 	
 	public static String petNameWithMultipleOwners() {
