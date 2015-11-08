@@ -45,6 +45,18 @@
 				<configuration>
 					<defaultLibBundleDir>lib/</defaultLibBundleDir>
 					<skinnyWars>true</skinnyWars>
+					<modules>
+						<webModule>
+							<groupId>es.uvigo.esei.xcs</groupId>
+							<artifactId>jsf</artifactId>
+							<contextRoot>/xcs-sample/jsf</contextRoot>
+						</webModule>
+						<webModule>
+							<groupId>es.uvigo.esei.xcs</groupId>
+							<artifactId>rest</artifactId>
+							<contextRoot>/xcs-sample/rest</contextRoot>
+						</webModule>
+					</modules>
 				</configuration>
 			</plugin>
 			<plugin>
