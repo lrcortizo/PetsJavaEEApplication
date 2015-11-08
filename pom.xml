@@ -52,7 +52,7 @@
 		<junit.version>4.12</junit.version>
 		<hamcrest.version>2.0.0.0</hamcrest.version>
 		<easymock.version>3.4</easymock.version>
-		<jacoco.version>0.7.5.201505241946</jacoco.version>
+		<jacoco.version>0.7.4.201502262128</jacoco.version>
 		<arquillian.jacoco.version>1.0.0.Alpha8</arquillian.jacoco.version>
 		<arquillian.persistence.dbunit.version>1.0.0.Alpha7</arquillian.persistence.dbunit.version>
 		<slf4j.version>1.5.10</slf4j.version>
