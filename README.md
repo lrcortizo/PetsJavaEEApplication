@@ -270,4 +270,23 @@ When executed, the REST resources can be found in
 `http://localhost:8080/jsf/faces/index.html`.
 
 ## Sample 6: Additional Testing Tools
-Coming soon...
+### Test coverage with JaCoCo
+Test coverage is a very useful tool that shows the parts of the source code that
+are covered by the tests. The coverage analysis is done during the tests
+execution, making it very precise.
+
+The JaCoCo plugin is now part or the project, analyzing the test execution. This
+plugin generates a HTML report in the `target/site/jacoco` folder. This report
+is very useful to check if some part of the code is missing some tests.
+
+## Wildfly Deployment
+The Wildfly Maven plugin is now part of the project. This plugin allows the
+automatic deployment of the project in a Wildfly server running with a port
+offset of 1000 (this means that the Wildfly uses the 9080 port as the HTTP port
+and the 10990 as the management port).
+
+The offset of a Wildfly server can be changed using the system property `jboss.socket.binding.port-offset`. For example, starting Wildfly with the
+command:
+```bash
+$WILDFLY_HOME/bin/standalone.sh -Djboss.socket.binding.port-offset=1000
+```

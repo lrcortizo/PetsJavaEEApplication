@@ -7,6 +7,19 @@
 	<packaging>pom</packaging>
 
 	<name>Sample</name>
+	
+    <distributionManagement>
+		<repository>
+			<id>deployment</id>
+			<name>Internal Releases</name>
+			<url>http://sing.ei.uvigo.es/dt/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>deployment</id>
+			<name>Internal SNAPSHOT Releases</name>
+			<url>http://sing.ei.uvigo.es/dt/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+    </distributionManagement>
 
 	<modules>
 		<module>domain</module>
@@ -38,10 +51,12 @@
 		<!-- Testing dependecies versions -->
 		<junit.version>4.12</junit.version>
 		<hamcrest.version>2.0.0.0</hamcrest.version>
-		<arquillian.persistence.dbunit.version>1.0.0.Alpha7</arquillian.persistence.dbunit.version>
-		<mysql.connector.java.version>5.1.21</mysql.connector.java.version>
-		<slf4j.version>1.5.10</slf4j.version>
 		<easymock.version>3.4</easymock.version>
+		<jacoco.version>0.7.5.201505241946</jacoco.version>
+		<arquillian.jacoco.version>1.0.0.Alpha8</arquillian.jacoco.version>
+		<arquillian.persistence.dbunit.version>1.0.0.Alpha7</arquillian.persistence.dbunit.version>
+		<slf4j.version>1.5.10</slf4j.version>
+		<mysql.connector.java.version>5.1.21</mysql.connector.java.version>
 		<resteasy.version>3.0.13.Final</resteasy.version>
 		<graphene.webdrive.version>2.1.0.Alpha3</graphene.webdrive.version>
 
@@ -150,6 +165,16 @@
 				<type>pom</type>
 			</dependency>
 			<dependency>
+				<groupId>org.jboss.arquillian.extension</groupId>
+				<artifactId>arquillian-jacoco</artifactId>
+				<version>${arquillian.jacoco.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jacoco</groupId>
+				<artifactId>org.jacoco.core</artifactId>
+				<version>${jacoco.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
 				<version>${mysql.connector.java}</version>
@@ -183,6 +208,15 @@
 	</dependencyManagement>
 
 	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<configuration>
+					<deployAtEnd>true</deployAtEnd>
+				</configuration>
+			</plugin>
+		</plugins>
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -204,11 +238,53 @@
 					<groupId>org.wildfly.plugins</groupId>
 					<artifactId>wildfly-maven-plugin</artifactId>
 					<version>${wildfly.maven.plugin.version}</version>
+					<configuration>
+						<!-- Avoids the execution of the wildfly:* goals in the subproject 
+							unless the plugin is activated in the subproject. -->
+						<skip>true</skip>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-ear-plugin</artifactId>
 					<version>${maven.ear.plugin}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.jacoco</groupId>
+					<artifactId>jacoco-maven-plugin</artifactId>
+					<version>${jacoco.version}</version>
+					<configuration>
+						<classDumpDir>${session.executionRootDirectory}/target/classes</classDumpDir>
+					</configuration>
+					<executions>
+						<execution>
+							<id>pre-unit-test</id>
+							<goals>
+								<goal>prepare-agent</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>post-unit-test</id>
+							<phase>test</phase>
+							<goals>
+								<goal>report</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>pre-integration-test</id>
+							<phase>pre-integration-test</phase>
+							<goals>
+								<goal>prepare-agent</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>post-integration-test</id>
+							<phase>post-integration-test</phase>
+							<goals>
+								<goal>report</goal>
+							</goals>
+						</execution>
+					</executions>
 				</plugin>
 				<!--This plugin's configuration is used to store Eclipse m2e settings 
 					only. It has no influence on the Maven build itself. -->
@@ -329,7 +405,7 @@
 						<artifactId>maven-resources-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>copy-mysql-ds</id>
+								<id>copy-wildfly-resources</id>
 								<phase>process-test-classes</phase>
 								<goals>
 									<goal>copy-resources</goal>
@@ -448,7 +524,7 @@
 						<artifactId>maven-resources-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>copy-mysql-ds</id>
+								<id>copy-wildfly-resources</id>
 								<phase>process-test-classes</phase>
 								<goals>
 									<goal>copy-resources</goal>
