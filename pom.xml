@@ -7,8 +7,8 @@
 	<packaging>pom</packaging>
 
 	<name>Sample</name>
-	
-    <distributionManagement>
+
+	<distributionManagement>
 		<repository>
 			<id>deployment</id>
 			<name>Internal Releases</name>
@@ -19,7 +19,7 @@
 			<name>Internal SNAPSHOT Releases</name>
 			<url>http://sing.ei.uvigo.es/dt/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
-    </distributionManagement>
+	</distributionManagement>
 
 	<modules>
 		<module>domain</module>
@@ -215,6 +215,30 @@
 				<configuration>
 					<deployAtEnd>true</deployAtEnd>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 		<pluginManagement>
