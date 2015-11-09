@@ -89,7 +89,8 @@ public class PetService {
 	 * Updates the information of a pet. If the pet is not stored, it will be
 	 * created.
 	 * 
-	 * @param pet a pet to be updated. 
+	 * @param pet a pet to be updated.
+	 * @return the updated pet.
 	 * @throws IllegalArgumentException if the pet has no owner.
 	 * @throws EJBAccessException if the pet's owner is not the current user.
 	 */

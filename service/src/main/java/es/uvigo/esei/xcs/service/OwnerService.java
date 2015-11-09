@@ -90,6 +90,7 @@ public class OwnerService {
 	 * Updates a new owner. If the owner is not stored, it will be persisted.
 	 * 
 	 * @param owner an owner to be updated.
+	 * @return the updated owner.
 	 * @throws IllegalArgumentException if {@code owner} is {@code null}.
 	 */
 	public Owner update(Owner owner) {
