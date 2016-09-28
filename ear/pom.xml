@@ -43,6 +43,10 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-ear-plugin</artifactId>
 				<configuration>
+					<applicationId>xcs-sample</applicationId>
+					<applicationName>XCS Sample</applicationName>
+					<displayName>XCS Sample</displayName>
+					<earName>${project.parent.artifactId}-${project.version}</earName>
 					<defaultLibBundleDir>lib/</defaultLibBundleDir>
 					<skinnyWars>true</skinnyWars>
 					<modules>

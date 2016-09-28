@@ -40,9 +40,9 @@
 
 		<!-- BOM versions -->
 		<javaee.api.version>7.0</javaee.api.version>
-		<arquillian.version>1.1.9.Final</arquillian.version>
+		<arquillian.version>1.1.11.Final</arquillian.version>
 		<arquillian.rest.version>1.0.0.Alpha3</arquillian.rest.version>
-		<arquillian.selenium.version>2.48.2</arquillian.selenium.version>
+		<arquillian.selenium.version>2.53.1</arquillian.selenium.version>
 
 		<!-- Dependencies versions -->
 		<wildfly.version>8.2.1.Final</wildfly.version>
@@ -52,24 +52,24 @@
 		<junit.version>4.12</junit.version>
 		<hamcrest.version>2.0.0.0</hamcrest.version>
 		<easymock.version>3.4</easymock.version>
-		<jacoco.version>0.7.4.201502262128</jacoco.version>
+		<jacoco.version>0.7.7.201606060606</jacoco.version>
 		<arquillian.jacoco.version>1.0.0.Alpha8</arquillian.jacoco.version>
 		<arquillian.persistence.dbunit.version>1.0.0.Alpha7</arquillian.persistence.dbunit.version>
 		<slf4j.version>1.5.10</slf4j.version>
 		<mysql.connector.java.version>5.1.21</mysql.connector.java.version>
-		<resteasy.version>3.0.13.Final</resteasy.version>
-		<graphene.webdrive.version>2.1.0.Alpha3</graphene.webdrive.version>
+		<resteasy.version>3.0.19.Final</resteasy.version>
+		<graphene.webdrive.version>2.1.0.Final</graphene.webdrive.version>
 
 		<!-- Plugins versions -->
-		<wildfly.maven.plugin.version>1.1.0.Alpha4</wildfly.maven.plugin.version>
-		<maven.compiler.plugin.version>3.3</maven.compiler.plugin.version>
-		<maven.source.plugin.version>2.4</maven.source.plugin.version>
-		<maven.javadoc.plugin.version>2.10.3</maven.javadoc.plugin.version>
+		<wildfly.maven.plugin.version>1.1.0.Alpha11</wildfly.maven.plugin.version>
+		<maven.compiler.plugin.version>3.5.1</maven.compiler.plugin.version>
+		<maven.source.plugin.version>3.0.1</maven.source.plugin.version>
+		<maven.javadoc.plugin.version>2.10.4</maven.javadoc.plugin.version>
 		<maven.deploy.plugin.version>2.8.2</maven.deploy.plugin.version>
 		<maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
-		<maven.surefire.plugin.version>2.18.1</maven.surefire.plugin.version>
-		<maven.resources.plugin.version>2.7</maven.resources.plugin.version>
-		<maven.ear.plugin>2.10.1</maven.ear.plugin>
+		<maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
+		<maven.resources.plugin.version>3.0.1</maven.resources.plugin.version>
+		<maven.ear.plugin.version>2.10.1</maven.ear.plugin.version>
 	</properties>
 
 	<dependencyManagement>
@@ -295,7 +295,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-ear-plugin</artifactId>
-					<version>${maven.ear.plugin}</version>
+					<version>${maven.ear.plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>
@@ -578,17 +578,11 @@
 									<goal>copy-resources</goal>
 								</goals>
 								<configuration>
-									<outputDirectory>target/wildfly-${wildfly.version}/standalone</outputDirectory>
+									<outputDirectory>target/wildfly-${wildfly.version}/standalone/configuration</outputDirectory>
 									<resources>
 										<resource>
 											<directory>src/test/resources-wildfly-embedded-mysql</directory>
-											<include>mysql-ds.xml</include>
-											<targetPath>deployments</targetPath>
-										</resource>
-										<resource>
-											<directory>src/test/resources-wildfly-embedded-mysql</directory>
 											<include>standalone.xml</include>
-											<targetPath>configuration</targetPath>
 										</resource>
 									</resources>
 								</configuration>

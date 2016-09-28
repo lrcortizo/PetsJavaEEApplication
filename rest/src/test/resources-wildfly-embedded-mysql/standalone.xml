@@ -152,6 +152,15 @@
                         <password>sa</password>
                     </security>
                 </datasource>
+                <datasource jta="true" jndi-name="java:jboss/datasources/xcs" pool-name="xcs-mysql" enabled="true" use-ccm="true">
+                    <connection-url>jdbc:mysql://localhost:3306/xcs</connection-url>
+                    <driver-class>com.mysql.jdbc.Driver</driver-class>
+                    <driver>mysql-connector-java-${mysql.version}.jar</driver>
+                    <security>
+                        <user-name>xcs</user-name>
+                        <password>xcs</password>
+                    </security>
+                </datasource>
                 <drivers>
                     <driver name="h2" module="com.h2database.h2">
                         <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>

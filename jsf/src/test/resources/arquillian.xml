@@ -8,6 +8,10 @@
 	<extension qualifier="persistence">
 	    <property name="defaultDataSeedStrategy">CLEAN_INSERT</property>
 	</extension>
+        
+	<extension qualifier="webdriver">
+	    <property name="browser">firefox</property>
+	</extension>
 	
 	<container qualifier="wildfly-embedded-h2" default="true">
 		<configuration>
