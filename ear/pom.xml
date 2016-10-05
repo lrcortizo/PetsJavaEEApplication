@@ -69,6 +69,7 @@
                 <configuration>
                 	<skip>false</skip>
                 	<port>10990</port>
+                	<filename>${project.parent.artifactId}-${project.version}.${project.packaging}</filename>
                 </configuration>
             </plugin>
 		</plugins>
