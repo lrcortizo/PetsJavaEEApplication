@@ -188,6 +188,7 @@ public class OwnerResourceRestTest {
 	@CleanupUsingScript({ "cleanup.sql", "cleanup-autoincrement.sql" })
 	public void afterCreateWithPets() {}
 
+	
 	private void testCreateOwner(WebTarget webTarget, Owner newOwner) {
 		testCreateOwner(webTarget, newOwner, newOwner);
 	}
@@ -203,7 +204,6 @@ public class OwnerResourceRestTest {
 	    final Owner owner = responseGet.readEntity(Owner.class);
 		assertThat(owner, is(equalsToOwner(persistentOwner)));
 	}
-
 	
 	
 	@Test @InSequence(30)

@@ -174,6 +174,12 @@ public class OwnerServiceIntegrationTest {
 		asAdmin.call(() -> facade.create(null));
 	}
 
+	@Test(expected = EJBTransactionRolledbackException.class)
+	@ShouldMatchDataSet("owners.xml")
+	public void testUpdateNull() {
+		asAdmin.run(() -> facade.update(null));
+	}
+
 	@Test
 	@ShouldMatchDataSet("owners-update-password.xml")
 	public void testUpdatePassword() {

@@ -132,14 +132,24 @@ public class PetServiceIntegrationTest {
 		final Owner owner = ownerWithoutPets();
 		principal.setName(owner.getLogin());
 		
-		final Pet pet = newPet();
+		final Pet pet = newPetWithOwner(owner);
 		
 		asOwner.call(() -> facade.create(pet));
+	}
+
+	@Test
+	@ShouldMatchDataSet({ "owners.xml", "owners-create-pet.xml" })
+	public void testCreateNullOwner() {
+		principal.setName(ownerWithoutPets().getLogin());
+		
+		final Pet pet = newPet();
+		
+		asOwner.run(() -> facade.create(pet));
 	}
 	
 	@Test(expected = EJBTransactionRolledbackException.class)
 	@ShouldMatchDataSet({ "owners.xml" })
-	public void testCreateNull() {
+	public void testCreateNullPet() {
 		principal.setName(ownerWithoutPets().getLogin());
 		
 		asOwner.run(() -> facade.create(null));

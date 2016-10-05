@@ -4,6 +4,7 @@ import static es.uvigo.esei.xcs.domain.entities.IsEqualsToOwner.containsOwnersIn
 import static es.uvigo.esei.xcs.domain.entities.IsEqualsToOwner.equalsToOwner;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.anyLogin;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.anyOwner;
+import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.existentOwner;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.newOwnerWithFreshPets;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.newOwnerWithPersistentPets;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.owners;
@@ -23,6 +24,7 @@ import static org.junit.Assert.assertThat;
 import java.net.URI;
 import java.util.List;
 
+import javax.persistence.EntityExistsException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
@@ -155,6 +157,18 @@ public class OwnerResourceUnitTest extends EasyMockSupport {
 		replayAll();
 		
 		resource.create(null);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testCreateExistentOwner() {
+		final Owner existentOwner = existentOwner();
+		
+		expect(facade.create(existentOwner))
+			.andThrow(new EntityExistsException());
+		
+		replayAll();
+		
+		resource.create(existentOwner);
 	}
 
 	@Test
