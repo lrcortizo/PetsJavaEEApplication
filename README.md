@@ -17,12 +17,17 @@ Install Maven 3 in your system, if it was not installed (the `mvn` command must
 be available). If you are in a Debian-based OS, install the `maven` package (**don't install `maven2` package!!**).
 
 ### Git
-First, install git in your system if it was not installed (the `git` command
+First, install Git in your system if it was not installed (the `git` command
 must be available). We will work with Git to get updates of these sample.
 Concretely, we will work with a Git repository inside
 [our Gitlab server](http://sing.ei.uvigo.es/dt/gitlab).
 
-    Git URL: `http://sing.ei.uvigo.es/dt/gitlab/dgss-1617/xcs-sample.git`
+Once Git is installed in your system, clone the project:
+```bash
+
+    git clone http://sing.ei.uvigo.es/dt/gitlab/dgss-1617/xcs-sample.git
+    
+```
 
 ### Eclipse
 
@@ -53,41 +58,43 @@ FLUSH PRIVILEGES;
 If you want to add some data to this database to run the application, you can
 also execute:
 ```sql
-DROP TABLE IF EXISTS `User`;
-CREATE TABLE `User` (
-  `role` varchar(5) NOT NULL,
-  `login` varchar(100) NOT NULL,
-  `password` varchar(32) NOT NULL,
-  PRIMARY KEY (`login`)
-);
 
-DROP TABLE IF EXISTS `Pet`;
-CREATE TABLE `Pet` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `animal` varchar(4) NOT NULL,
-  `birth` datetime NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `owner` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK_6mfctqh1tpytabbk1u4bk1pym` (`owner`),
-  CONSTRAINT `FK_6mfctqh1tpytabbk1u4bk1pym` FOREIGN KEY (`owner`) REFERENCES `User` (`login`)
-);
-
--- All the passwords are "<login>pass".
-INSERT INTO `User`
-   VALUES ('ADMIN','jose','A3F6F4B40B24E2FD61F08923ED452F34'),
-          ('OWNER','pepe','B43B4D046860B2BD945BCA2597BF9F07'),
-          ('OWNER','juan','B4FBB95580592697DC71488A1F19277E'),
-          ('OWNER','ana','22BEEAE33E9B2657F9610621502CD7A4'),
-          ('OWNER','lorena','05009E420932C21E5A68F5EF1AADD530');
-
-INSERT INTO `Pet` (animal, birth, name, owner)
-   VALUES ('CAT','2000-01-01 01:01:01','Pepecat','pepe'),
-          ('CAT','2000-01-01 01:01:01','Max','juan'),
-          ('DOG','2000-01-01 01:01:01','Juandog','juan'),
-          ('CAT','2000-01-01 01:01:01','Anacat','ana'),
-          ('DOG','2000-01-01 01:01:01','Max','ana'),
-          ('BIRD','2000-01-01 01:01:01','Anabird','ana');
+	DROP TABLE IF EXISTS `User`;
+	CREATE TABLE `User` (
+	  `role` varchar(5) NOT NULL,
+	  `login` varchar(100) NOT NULL,
+	  `password` varchar(32) NOT NULL,
+	  PRIMARY KEY (`login`)
+	);
+	
+	DROP TABLE IF EXISTS `Pet`;
+	CREATE TABLE `Pet` (
+	  `id` int(11) NOT NULL AUTO_INCREMENT,
+	  `animal` varchar(4) NOT NULL,
+	  `birth` datetime NOT NULL,
+	  `name` varchar(100) NOT NULL,
+	  `owner` varchar(100) NOT NULL,
+	  PRIMARY KEY (`id`),
+	  KEY `FK_6mfctqh1tpytabbk1u4bk1pym` (`owner`),
+	  CONSTRAINT `FK_6mfctqh1tpytabbk1u4bk1pym` FOREIGN KEY (`owner`) REFERENCES `User` (`login`)
+	);
+	
+	-- All the passwords are "<login>pass".
+	INSERT INTO `User`
+	   VALUES ('ADMIN','jose','A3F6F4B40B24E2FD61F08923ED452F34'),
+	          ('OWNER','pepe','B43B4D046860B2BD945BCA2597BF9F07'),
+	          ('OWNER','juan','B4FBB95580592697DC71488A1F19277E'),
+	          ('OWNER','ana','22BEEAE33E9B2657F9610621502CD7A4'),
+	          ('OWNER','lorena','05009E420932C21E5A68F5EF1AADD530');
+	
+	INSERT INTO `Pet` (animal, birth, name, owner)
+	   VALUES ('CAT','2000-01-01 01:01:01','Pepecat','pepe'),
+	          ('CAT','2000-01-01 01:01:01','Max','juan'),
+	          ('DOG','2000-01-01 01:01:01','Juandog','juan'),
+	          ('CAT','2000-01-01 01:01:01','Anacat','ana'),
+	          ('DOG','2000-01-01 01:01:01','Max','ana'),
+	          ('BIRD','2000-01-01 01:01:01','Anabird','ana');
+	          
 ```
 
 ### Wildfly 8
@@ -96,31 +103,28 @@ the datasource used by the application and the security configuration.
 
 #### Datasource
 There are several ways to add a datasource to a WildFly server. We are going to
-use the simplest way: add the datasource as a deployment. To do so, you have to
-add a XML file to the `standalone/deployments` folder of the WildFly server with
-the following content:
+add a new datasource to the `standalone/configuration/standalone.xml`
+configuration file of the server. To do so, you have to edit this file and add
+the following content to the `<datasources>` element:
 ```xml
-<datasources xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns="http://www.ironjacamar.org/doc/schema"
-  xsi:schemaLocation="http://www.ironjacamar.org/doc/schema http://www.ironjacamar.org/doc/schema/datasources_1_1.xsd">
 
-  <datasource jndi-name="java:jboss/datasources/xcs" pool-name="MySQLPool">
-
-      <connection-url>jdbc:mysql://localhost:3306/xcs</connection-url>
-      <driver>mysql-connector-java-5.1.21.jar</driver>
-      <pool>
-          <max-pool-size>30</max-pool-size>
-      </pool>
-      <security>
-          <user-name>xcs</user-name>
-          <password>xcs</password>
-      </security>
-  </datasource>
-</datasources>
+	<datasource jndi-name="java:jboss/datasources/xcs" pool-name="MySQLPool">
+		<connection-url>jdbc:mysql://localhost:3306/xcs</connection-url>
+		<driver>mysql-connector-java-5.1.21.jar</driver>
+		<pool>
+			<max-pool-size>30</max-pool-size>
+		</pool>
+		<security>
+			<user-name>xcs</user-name>
+			<password>xcs</password>
+		</security>		
+	</datasource>
+	
 ```
 
-In addition, you also have to add to the same folder the MySQL driver that can
-be downloaded from [here](http://central.maven.org/maven2/mysql/mysql-connector-java/5.1.21/mysql-connector-java-5.1.21.jar).
+In addition, you also have to add the MySQL driver to the deployments folder
+(`standalone/deployments`). You can download it form [here](http://central.maven.org/maven2/mysql/mysql-connector-java/5.1.21/mysql-connector-java-5.1.21.jar)
+to the deployments folder and Wildfly will automatically deploy it.
 
 #### Security configuration
 All the WildFly security configuration is done in the
@@ -128,34 +132,38 @@ All the WildFly security configuration is done in the
 
 Inside the `<security-reamls>` element you have to add:
 ```xml
-<security-realm name="RemotingRealm">
-    <authentication>
-        <jaas name="AppRealmLoopThrough"/>
-    </authentication>
-</security-realm>
+
+	<security-realm name="RemotingRealm">
+		<authentication>
+			<jaas name="AppRealmLoopThrough"/>
+		</authentication>
+	</security-realm>
+	
 ```
 
 And inside the `<security-domains>` element you have to add:
 ```xml
-<security-domain name="AppRealmLoopThrough" cache-type="default">
-    <authentication>
-        <login-module code="Client" flag="required">
-            <module-option name="multi-threaded" value="true"/>
-        </login-module>
-    </authentication>
-</security-domain>
-<security-domain name="xcs-sample-security-domain">
-    <authentication>
-        <login-module code="Database" flag="required">
-            <module-option name="dsJndiName" value="java:jboss/datasources/xcs"/>
-            <module-option name="principalsQuery" value="SELECT password FROM User WHERE login=?"/>
-            <module-option name="rolesQuery" value="SELECT role, 'Roles' FROM User WHERE login=?"/>
-            <module-option name="hashAlgorithm" value="MD5"/>
-            <module-option name="hashEncoding" value="hex"/>
-            <module-option name="ignorePasswordCase" value="true"/>
-        </login-module>
-    </authentication>
-</security-domain>
+
+	<security-domain name="AppRealmLoopThrough" cache-type="default">
+		<authentication>
+			<login-module code="Client" flag="required">
+				<module-option name="multi-threaded" value="true"/>
+			</login-module>
+		</authentication>
+	</security-domain>
+	<security-domain name="xcs-sample-security-domain">
+		<authentication>
+			<login-module code="Database" flag="required">
+				<module-option name="dsJndiName" value="java:jboss/datasources/xcs"/>
+				<module-option name="principalsQuery" value="SELECT password FROM User WHERE login=?"/>
+				<module-option name="rolesQuery" value="SELECT role, 'Roles' FROM User WHERE login=?"/>
+				<module-option name="hashAlgorithm" value="MD5"/>
+				<module-option name="hashEncoding" value="hex"/>
+				<module-option name="ignorePasswordCase" value="true"/>
+			</login-module>
+		</authentication>
+	</security-domain>
+
 ```
 
 #### Deploying the application
@@ -283,5 +291,7 @@ and the 10990 as the management port).
 The offset of a Wildfly server can be changed using the system property `jboss.socket.binding.port-offset`. For example, starting Wildfly with the
 command:
 ```bash
-$WILDFLY_HOME/bin/standalone.sh -Djboss.socket.binding.port-offset=1000
+
+	$WILDFLY_HOME/bin/standalone.sh -Djboss.socket.binding.port-offset=1000
+
 ```
