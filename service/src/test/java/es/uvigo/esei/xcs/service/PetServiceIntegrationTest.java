@@ -1,7 +1,7 @@
 package es.uvigo.esei.xcs.service;
 
-import static es.uvigo.esei.xcs.domain.entities.IsEqualsToPet.containsPetsInAnyOrder;
-import static es.uvigo.esei.xcs.domain.entities.IsEqualsToPet.equalsToPet;
+import static es.uvigo.esei.xcs.domain.entities.IsEqualToPet.containsPetsInAnyOrder;
+import static es.uvigo.esei.xcs.domain.entities.IsEqualToPet.equalToPet;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.existentPetId;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.newPet;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.newPetWithOwner;
@@ -75,7 +75,7 @@ public class PetServiceIntegrationTest {
 		
 		final Pet actual = asOwner.call(() -> facade.get(id));
 		
-		assertThat(actual, equalsToPet(pet));
+		assertThat(actual, equalToPet(pet));
 	}
 
 	@Test

@@ -1,7 +1,7 @@
 package es.uvigo.esei.xcs.rest;
 
-import static es.uvigo.esei.xcs.domain.entities.IsEqualsToOwner.containsOwnersInAnyOrder;
-import static es.uvigo.esei.xcs.domain.entities.IsEqualsToOwner.equalsToOwner;
+import static es.uvigo.esei.xcs.domain.entities.IsEqualToOwner.containsOwnersInAnyOrder;
+import static es.uvigo.esei.xcs.domain.entities.IsEqualToOwner.equalToOwner;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.EXISTENT_LOGIN;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.NON_EXISTENT_LOGIN;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.OWNER_WITHOUT_PETS_LOGIN;
@@ -89,7 +89,7 @@ public class OwnerResourceRestTest {
 	    final Owner owner = response.readEntity(Owner.class);
 	    final Owner expected = existentOwner();
 	    
-		assertThat(owner, is(equalsToOwner(expected)));
+		assertThat(owner, is(equalToOwner(expected)));
 	}
 	
 	@Test @InSequence(3)
@@ -202,7 +202,7 @@ public class OwnerResourceRestTest {
 	    
 	    final Response responseGet = authorizedJsonRequestGet(location);
 	    final Owner owner = responseGet.readEntity(Owner.class);
-		assertThat(owner, is(equalsToOwner(persistentOwner)));
+		assertThat(owner, is(equalToOwner(persistentOwner)));
 	}
 	
 	

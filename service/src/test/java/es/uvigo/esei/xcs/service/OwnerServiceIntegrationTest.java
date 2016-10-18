@@ -1,8 +1,8 @@
 package es.uvigo.esei.xcs.service;
 
-import static es.uvigo.esei.xcs.domain.entities.IsEqualsToOwner.containsOwnersInAnyOrder;
-import static es.uvigo.esei.xcs.domain.entities.IsEqualsToOwner.equalsToOwner;
-import static es.uvigo.esei.xcs.domain.entities.IsEqualsToPet.containsPetsInAnyOrder;
+import static es.uvigo.esei.xcs.domain.entities.IsEqualToOwner.containsOwnersInAnyOrder;
+import static es.uvigo.esei.xcs.domain.entities.IsEqualToOwner.equalToOwner;
+import static es.uvigo.esei.xcs.domain.entities.IsEqualToPet.containsPetsInAnyOrder;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.existentLogin;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.existentOwner;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.newOwnerWithFreshPets;
@@ -77,7 +77,7 @@ public class OwnerServiceIntegrationTest {
 		
 		final Owner actual = asAdmin.call(() -> facade.get(login));
 		
-		assertThat(actual, is(equalsToOwner(ownerWithLogin(login))));
+		assertThat(actual, is(equalToOwner(ownerWithLogin(login))));
 	}
 
 	@Test
@@ -113,7 +113,7 @@ public class OwnerServiceIntegrationTest {
 		final List<Owner> owners = asAdmin.call(() -> facade.findByPetName(petName));
 		
 		assertThat(owners, hasSize(1));
-		assertThat(owners.get(0), is(equalsToOwner(owner)));
+		assertThat(owners.get(0), is(equalToOwner(owner)));
 	}
 
 	@Test
@@ -151,7 +151,7 @@ public class OwnerServiceIntegrationTest {
 		
 		final Owner actual = asAdmin.call(() -> facade.create(newOwner));
 		
-		assertThat(actual, is(equalsToOwner(newOwner)));
+		assertThat(actual, is(equalToOwner(newOwner)));
 	}
 
 	@Test
@@ -159,7 +159,7 @@ public class OwnerServiceIntegrationTest {
 	public void testCreateWithPets() {
 		final Owner actual = asAdmin.call(() -> facade.create(newOwnerWithFreshPets()));
 		
-		assertThat(actual, is(equalsToOwner(newOwnerWithPersistentPets())));
+		assertThat(actual, is(equalToOwner(newOwnerWithPersistentPets())));
 	}
 
 	@Test(expected = EJBTransactionRolledbackException.class)
@@ -196,7 +196,7 @@ public class OwnerServiceIntegrationTest {
 		
 		final Owner actual = asAdmin.call(() -> facade.update(newOwner));
 		
-		assertThat(actual, is(equalsToOwner(newOwner)));
+		assertThat(actual, is(equalToOwner(newOwner)));
 	}
 
 	@Test
@@ -204,7 +204,7 @@ public class OwnerServiceIntegrationTest {
 	public void testUpdateNewOwnerWithPets() {
 		final Owner actual = asAdmin.call(() -> facade.update(newOwnerWithFreshPets()));
 		
-		assertThat(actual, is(equalsToOwner(newOwnerWithPersistentPets())));
+		assertThat(actual, is(equalToOwner(newOwnerWithPersistentPets())));
 	}
 
 	@Test

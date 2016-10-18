@@ -1,7 +1,7 @@
 package es.uvigo.esei.xcs.rest;
 
-import static es.uvigo.esei.xcs.domain.entities.IsEqualsToOwner.containsOwnersInAnyOrder;
-import static es.uvigo.esei.xcs.domain.entities.IsEqualsToOwner.equalsToOwner;
+import static es.uvigo.esei.xcs.domain.entities.IsEqualToOwner.containsOwnersInAnyOrder;
+import static es.uvigo.esei.xcs.domain.entities.IsEqualToOwner.equalToOwner;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.anyLogin;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.anyOwner;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.existentOwner;
@@ -73,7 +73,7 @@ public class OwnerResourceUnitTest extends EasyMockSupport {
 		
 		assertThat(response, hasHttpStatus(OK));
 		assertThat(response.getEntity(), is(instanceOf(Owner.class)));
-		assertThat((Owner) response.getEntity(), is(equalsToOwner(owner)));
+		assertThat((Owner) response.getEntity(), is(equalToOwner(owner)));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
