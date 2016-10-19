@@ -8,19 +8,12 @@
 	<extension qualifier="persistence">
 	    <property name="defaultDataSeedStrategy">CLEAN_INSERT</property>
 	</extension>
-        
+
 	<extension qualifier="webdriver">
 	    <property name="browser">firefox</property>
 	</extension>
-	
-	<container qualifier="wildfly-embedded-h2" default="true">
-		<configuration>
-			<property name="jbossHome">target/wildfly-${wildfly.version}</property>
-			<property name="modulePath">target/wildfly-${wildfly.version}/modules</property>
-		</configuration>
-	</container>
 
-	<container qualifier="wildfly-embedded-mysql">
+	<container qualifier="wildfly-embedded" default="true">
 		<configuration>
 			<property name="jbossHome">target/wildfly-${wildfly.version}</property>
 			<property name="modulePath">target/wildfly-${wildfly.version}/modules</property>

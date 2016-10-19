@@ -181,7 +181,7 @@
 			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
-				<version>${mysql.connector.java}</version>
+				<version>${mysql.connector.java.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
@@ -276,6 +276,10 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>${maven.surefire.plugin.version}</version>
+					<configuration>
+						<!-- By default, only tests suites are executed -->
+						<includes>**/*TestSuite.java</includes>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -416,7 +420,7 @@
 							<systemPropertyVariables>
 								<java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
 								<wildfly.version>${wildfly.version}</wildfly.version>
-								<arquillian.launch>wildfly-embedded-h2</arquillian.launch>
+								<arquillian.launch>wildfly-embedded</arquillian.launch>
 							</systemPropertyVariables>
 							<redirectTestOutputToFile>false</redirectTestOutputToFile>
 						</configuration>
@@ -470,6 +474,52 @@
 							</execution>
 						</executions>
 					</plugin>
+					
+					<plugin>
+		                <groupId>org.wildfly.plugins</groupId>
+		                <artifactId>wildfly-maven-plugin</artifactId>
+		                <configuration>
+		                	<before-deployment>
+		                		<batch/>
+								<commands>
+									<command>data-source add --jndi-name=java:jboss/datasources/xcs --name=xcs-sample --jta=true --use-ccm=true --connection-url=jdbc:h2:mem:xcs;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE --driver-name=h2 --user-name=xcs --password=xcs</command>
+									<command>/core-service=management/security-realm=RemotingRealm:add</command>
+									<command>/core-service=management/security-realm=RemotingRealm/authentication=jaas:add(name="AppRealmLoopThrough")</command>
+									<command>/subsystem=remoting/http-connector=http-remoting-connector:write-attribute(name="security-realm", value="RemotingRealm")</command>
+									<command>/subsystem=security/security-domain=AppRealmLoopThrough:add(cache-type=default)</command>
+									<command>/subsystem=security/security-domain=AppRealmLoopThrough/authentication=classic:add(login-modules=[{"code"=>"Client", "flag" => "required", "module-options" => [("multi-threaded" => "true")]}])</command>
+									<command>/subsystem=security/security-domain=xcs-sample-security-domain:add</command>
+									<command>/subsystem=security/security-domain=xcs-sample-security-domain/authentication=classic:add(login-modules=[{"code"=>"Database", "flag" => "required", "module-options" => [("dsJndiName" => "java:jboss/datasources/xcs"),("principalsQuery" => "SELECT password FROM User WHERE login=?"),("rolesQuery" => "SELECT role, 'Roles' FROM User WHERE login=?"),("hashAlgorithm" => "MD5"),("hashEncoding" => "hex"),("ignorePasswordCase" => "true")]}])</command>
+								</commands>
+		                	</before-deployment>
+		                	<after-deployment>
+		                		<commands>
+		                			<command>:reload</command>
+		                		</commands>
+		                	</after-deployment>
+		                	<add-user>
+		                		<users>
+		                			<user>
+		                				<username>wildfly-admin</username>
+		                				<password>xcsadmin</password>
+		                				<applicationUser>false</applicationUser>
+		                			</user>
+		                			<user>
+		                				<username>admin</username>
+		                				<password>adminpass</password>
+		                				<applicationUser>true</applicationUser>
+		                				<groups>ADMIN</groups>
+		                			</user>
+		                			<user>
+		                				<username>owner</username>
+		                				<password>ownerpass</password>
+		                				<applicationUser>true</applicationUser>
+		                				<groups>OWNER</groups>
+		                			</user>
+		                		</users>
+		                	</add-user>
+		                </configuration>
+		            </plugin>
 				</plugins>
 			</build>
 		</profile>
@@ -517,7 +567,7 @@
 								<java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
 								<mysql.version>${mysql.connector.java.version}</mysql.version>
 								<wildfly.version>${wildfly.version}</wildfly.version>
-								<arquillian.launch>wildfly-embedded-mysql</arquillian.launch>
+								<arquillian.launch>wildfly-embedded</arquillian.launch>
 							</systemPropertyVariables>
 							<redirectTestOutputToFile>false</redirectTestOutputToFile>
 						</configuration>
@@ -546,7 +596,7 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>copy-dependencies</id>
+								<id>copy-mysql</id>
 								<phase>process-test-classes</phase>
 								<goals>
 									<goal>copy</goal>
@@ -556,13 +606,32 @@
 										<artifactItem>
 											<groupId>mysql</groupId>
 											<artifactId>mysql-connector-java</artifactId>
-											<version>${mysql.connector.java.version}</version>
 											<type>jar</type>
 											<overWrite>false</overWrite>
-											<outputDirectory>target/wildfly-${wildfly.version}/standalone/deployments</outputDirectory>
+											<outputDirectory>${project.build.directory}/wildfly-${wildfly.version}/standalone/deployments</outputDirectory>
 										</artifactItem>
 									</artifactItems>
 								</configuration>
+							</execution>
+							<execution>
+								<id>copy-mysql-for-execution</id>
+								<phase>process-test-classes</phase>
+								<goals>
+									<goal>copy</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>mysql</groupId>
+											<artifactId>mysql-connector-java</artifactId>
+											<type>jar</type>
+											<overWrite>false</overWrite>
+											<outputDirectory>${project.build.directory}</outputDirectory>
+											<destFileName>mysql-connector-java-${mysql.connector.java.version}.jar</destFileName>
+										</artifactItem>
+									</artifactItems>
+								</configuration>
+								<!-- This JAR will be used for executing the Wildfly server -->
 							</execution>
 						</executions>
 					</plugin>
@@ -578,7 +647,7 @@
 									<goal>copy-resources</goal>
 								</goals>
 								<configuration>
-									<outputDirectory>target/wildfly-${wildfly.version}/standalone/configuration</outputDirectory>
+									<outputDirectory>${project.build.directory}/wildfly-${wildfly.version}/standalone/configuration</outputDirectory>
 									<resources>
 										<resource>
 											<directory>src/test/resources-wildfly-embedded-mysql</directory>
@@ -589,6 +658,41 @@
 							</execution>
 						</executions>
 					</plugin>
+					
+					<plugin>
+		                <groupId>org.wildfly.plugins</groupId>
+		                <artifactId>wildfly-maven-plugin</artifactId>
+		                <configuration>
+		                	<before-deployment>
+		                		<batch/>
+								<commands>
+									<command>deploy ${project.build.directory}/mysql-connector-java-${mysql.connector.java.version}.jar</command>
+									<command>data-source add --jndi-name=java:jboss/datasources/xcs --name=xcs-sample --jta=true --use-ccm=true --connection-url=jdbc:mysql://localhost:3306/xcs --driver-name=mysql-connector-java-${mysql.connector.java.version}.jar --driver-class=com.mysql.jdbc.Driver --user-name=xcs --password=xcs</command>
+									<command>/core-service=management/security-realm=RemotingRealm:add</command>
+									<command>/core-service=management/security-realm=RemotingRealm/authentication=jaas:add(name="AppRealmLoopThrough")</command>
+									<command>/subsystem=remoting/http-connector=http-remoting-connector:write-attribute(name="security-realm", value="RemotingRealm")</command>
+									<command>/subsystem=security/security-domain=AppRealmLoopThrough:add(cache-type=default)</command>
+									<command>/subsystem=security/security-domain=AppRealmLoopThrough/authentication=classic:add(login-modules=[{"code"=>"Client", "flag" => "required", "module-options" => [("multi-threaded" => "true")]}])</command>
+									<command>/subsystem=security/security-domain=xcs-sample-security-domain:add</command>
+									<command>/subsystem=security/security-domain=xcs-sample-security-domain/authentication=classic:add(login-modules=[{"code"=>"Database", "flag" => "required", "module-options" => [("dsJndiName" => "java:jboss/datasources/xcs"),("principalsQuery" => "SELECT password FROM User WHERE login=?"),("rolesQuery" => "SELECT role, 'Roles' FROM User WHERE login=?"),("hashAlgorithm" => "MD5"),("hashEncoding" => "hex"),("ignorePasswordCase" => "true")]}])</command>
+								</commands>
+		                	</before-deployment>
+		                	<after-deployment>
+		                		<commands>
+		                			<command>:reload</command>
+		                		</commands>
+		                	</after-deployment>
+		                	<add-user>
+		                		<users>
+		                			<user>
+		                				<username>wildfly-admin</username>
+		                				<password>xcsadmin</password>
+		                				<applicationUser>false</applicationUser>
+		                			</user>
+		                		</users>
+	                		</add-user>
+		                </configuration>
+		            </plugin>
 				</plugins>
 			</build>
 		</profile>

@@ -6,7 +6,7 @@ the XCS subject inside the DGSS itinerary.
 ## Deployment Environment
 
 The environment is based on Maven 3, MySQL 5.5, WildFly 8.2.1 and Eclipse Neon
-for JEE.
+for JavaEE.
 
 ### Java JDK 8
 Download and install Java JDK 8, preferably the Oracle version (the commands
@@ -14,7 +14,8 @@ Download and install Java JDK 8, preferably the Oracle version (the commands
 
 ### Maven
 Install Maven 3 in your system, if it was not installed (the `mvn` command must
-be available). If you are in a Debian-based OS, install the `maven` package (**don't install `maven2` package!!**).
+be available). If you are in a Debian-based OS, install the `maven` package
+(**don't install `maven2` package!!**).
 
 ### Git
 First, install Git in your system if it was not installed (the `git` command
@@ -24,9 +25,7 @@ Concretely, we will work with a Git repository inside
 
 Once Git is installed in your system, clone the project:
 ```bash
-
     git clone http://sing.ei.uvigo.es/dt/gitlab/dgss-1617/xcs-sample.git
-    
 ```
 
 ### Eclipse
@@ -39,34 +38,45 @@ Select your source code folder (where the `pom.xml` should be placed).
 Eclipse should then import a parent project (`xcs-sample`) and 6 child projects
 (`tests`, `domain`, `service`, `rest`, `jsf` and `ear`).
 
-If you want, you can use any other IDE, such as IntelliJ IDEA or NetBeans, as long as they are compatible with Maven projects, but we recommend using Eclipse Neon for Java EE.
+If you want, you can use any other IDE, such as IntelliJ IDEA or NetBeans, as
+long as they are compatible with Maven projects, but we recommend using Eclipse
+Neon for Java EE.
 
 ### MySQL
 In order to run the tests with the `wildfly-embedded-mysql` profile (more about
 this in the **Sample 2** section) and to run the application, we need a MySQL
 server.
 
-The server can be installed as usual, but it must contain the `xcs` database and
-the user `xcs` identified by `xcs` should have all privileges on this database.
-You can do this by executing the following commands:
+The server can be installed as usual, but it must contain two databases:
+  * The `xcs` database for running the application.
+  * The `xcssampletest` database for testing the appliaction.
+
+In both cases, the user `xcs` identified by `xcs` should have all privileges on
+this database. You can do this by executing the following commands:
+
 ```sql
 CREATE DATABASE xcs;
 GRANT ALL PRIVILEGES ON xcs TO xcs@localhost IDENTIFIED BY 'xcs';
 FLUSH PRIVILEGES;
+
+CREATE DATABASE xcssampletest;
+GRANT ALL PRIVILEGES ON xcssampletest TO xcs@localhost IDENTIFIED BY 'xcs';
+FLUSH PRIVILEGES;
 ```
 
-If you want to add some data to this database to run the application, you can
-also execute:
-```sql
+If you want to add some data to the `xcs` database to run the application (data
+will be automatically inseted to the `xcssampletest` database during the tests),
+ you can also execute:
 
-	DROP TABLE IF EXISTS `User`;
+```sql
+  DROP TABLE IF EXISTS `User`;
 	CREATE TABLE `User` (
 	  `role` varchar(5) NOT NULL,
 	  `login` varchar(100) NOT NULL,
 	  `password` varchar(32) NOT NULL,
 	  PRIMARY KEY (`login`)
 	);
-	
+
 	DROP TABLE IF EXISTS `Pet`;
 	CREATE TABLE `Pet` (
 	  `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -78,7 +88,7 @@ also execute:
 	  KEY `FK_6mfctqh1tpytabbk1u4bk1pym` (`owner`),
 	  CONSTRAINT `FK_6mfctqh1tpytabbk1u4bk1pym` FOREIGN KEY (`owner`) REFERENCES `User` (`login`)
 	);
-	
+
 	-- All the passwords are "<login>pass".
 	INSERT INTO `User`
 	   VALUES ('ADMIN','jose','A3F6F4B40B24E2FD61F08923ED452F34'),
@@ -86,7 +96,7 @@ also execute:
 	          ('OWNER','juan','B4FBB95580592697DC71488A1F19277E'),
 	          ('OWNER','ana','22BEEAE33E9B2657F9610621502CD7A4'),
 	          ('OWNER','lorena','05009E420932C21E5A68F5EF1AADD530');
-	
+
 	INSERT INTO `Pet` (animal, birth, name, owner)
 	   VALUES ('CAT','2000-01-01 01:01:01','Pepecat','pepe'),
 	          ('CAT','2000-01-01 01:01:01','Max','juan'),
@@ -94,12 +104,21 @@ also execute:
 	          ('CAT','2000-01-01 01:01:01','Anacat','ana'),
 	          ('DOG','2000-01-01 01:01:01','Max','ana'),
 	          ('BIRD','2000-01-01 01:01:01','Anabird','ana');
-	          
+
 ```
+
+You can find the `xcs-sample-mysql.sql` and `xcs-sample-test-mysql.sql` scripts
+with these queries stored in the `additional-material/db` project folder.
 
 ### Wildfly 8
 Before we can run the project, we need to configure a WildFly server to include
 the datasource used by the application and the security configuration.
+
+In the following sections you can find an explanation of how you can configure
+the WildFly server by editing the `standalone.xml`. However, the
+`additional-material/wildfly` folder includes a `standalone.xml` ready to be
+used that you can just copy to your WildFly server (replacing the original
+`standalone/configuration/standalone.xml` file).
 
 #### Datasource
 There are several ways to add a datasource to a WildFly server. We are going to
@@ -107,7 +126,6 @@ add a new datasource to the `standalone/configuration/standalone.xml`
 configuration file of the server. To do so, you have to edit this file and add
 the following content to the `<datasources>` element:
 ```xml
-
 	<datasource jndi-name="java:jboss/datasources/xcs" pool-name="MySQLPool">
 		<connection-url>jdbc:mysql://localhost:3306/xcs</connection-url>
 		<driver>mysql-connector-java-5.1.21.jar</driver>
@@ -119,7 +137,6 @@ the following content to the `<datasources>` element:
 			<password>xcs</password>
 		</security>		
 	</datasource>
-	
 ```
 
 In addition, you also have to add the MySQL driver to the deployments folder
@@ -132,18 +149,15 @@ All the WildFly security configuration is done in the
 
 Inside the `<security-reamls>` element you have to add:
 ```xml
-
 	<security-realm name="RemotingRealm">
 		<authentication>
 			<jaas name="AppRealmLoopThrough"/>
 		</authentication>
 	</security-realm>
-	
 ```
 
 And inside the `<security-domains>` element you have to add:
 ```xml
-
 	<security-domain name="AppRealmLoopThrough" cache-type="default">
 		<authentication>
 			<login-module code="Client" flag="required">
@@ -163,7 +177,6 @@ And inside the `<security-domains>` element you have to add:
 			</login-module>
 		</authentication>
 	</security-domain>
-
 ```
 
 #### Deploying the application
@@ -177,7 +190,25 @@ the entire application. To do so, you can copy this file to the
 
 Once this is done, you can run the WildFly server executing the
 `bin/standalone.sh` script. The application should be running in
-`http://localhost:8080/`
+`http://localhost:8080/`.
+
+#### Running the application
+This project includes the Maven WildFly plugin, which allows the execution of
+the project without needing an external WildFly server. To run the application
+with the running MySQL database (`xcs`) you just have to go to the `ear` module
+and execute the following command:
+
+```bash
+  mvn wildfly:start wildfly:deploy -P wildfly-embedded-mysql,-wildfly-embedded-h2
+```
+
+Once the application is running you can access it in the URL `http://localhost:8080/xcs-sample/jsf`.
+
+To stop the WildFly lauched you can execute the following command:
+
+```bash
+  mvn wildfly:shutdown
+```
 
 ## Sample 1: Testing entities
 Using JUnit and Hamcrest, we will see how to test JPA entities or any other
@@ -281,17 +312,3 @@ execution, making it very precise.
 The JaCoCo plugin is now part or the project, analyzing the test execution. This
 plugin generates a HTML report in the `target/site/jacoco` folder. This report
 is very useful to check if some part of the code is missing some tests.
-
-## Wildfly Deployment
-The Wildfly Maven plugin is now part of the project. This plugin allows the
-automatic deployment of the project in a Wildfly server running with a port
-offset of 1000 (this means that the Wildfly uses the 9080 port as the HTTP port
-and the 10990 as the management port).
-
-The offset of a Wildfly server can be changed using the system property `jboss.socket.binding.port-offset`. For example, starting Wildfly with the
-command:
-```bash
-
-	$WILDFLY_HOME/bin/standalone.sh -Djboss.socket.binding.port-offset=1000
-
-```
