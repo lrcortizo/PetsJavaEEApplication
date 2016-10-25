@@ -3,46 +3,47 @@
 This repository contains the code base of a sample project that will be used in
 the XCS subject inside the DGSS itinerary.
 
-## Deployment Environment
+## 1. Deployment Environment
+The environment is based on Java 8, Maven 3.3+, Git 1.9+, MySQL 5.5+,
+WildFly 8.2.1 and Eclipse Neon for JavaEE.
 
-The environment is based on Maven 3, MySQL 5.5, WildFly 8.2.1 and Eclipse Neon
-for JavaEE.
-
-### Java JDK 8
+### 1.1. Java JDK 8
 Download and install Java JDK 8, preferably the Oracle version (the commands
 `java` and `javac` must be available).
 
-### Maven
+You can test your Java installation with the commands:
+```bash
+java -version
+javac -version
+```
+
+### 1.2. Maven 3.3+
 Install Maven 3 in your system, if it was not installed (the `mvn` command must
 be available). If you are in a Debian-based OS, install the `maven` package
 (**don't install `maven2` package!!**).
 
-### Git
+You can test your Maven installation with the command:
+```bash
+mvn --version
+```
+
+### 1.3. Git 1.9+
 First, install Git in your system if it was not installed (the `git` command
 must be available). We will work with Git to get updates of these sample.
 Concretely, we will work with a Git repository inside
 [our Gitlab server](http://sing.ei.uvigo.es/dt/gitlab).
 
-Once Git is installed in your system, clone the project:
+You can tests your Git installation with the command:
 ```bash
-    git clone http://sing.ei.uvigo.es/dt/gitlab/dgss-1617/xcs-sample.git
+git --version
 ```
 
-### Eclipse
+Once Git is installed in your system, clone the project:
+```bash
+git clone http://sing.ei.uvigo.es/dt/gitlab/dgss-1617/xcs-sample.git
+```
 
-Open Eclipse Neon for Java EE and import your Maven project with
-`File -> Import -> Maven -> Existing Maven Projects`
-
-Select your source code folder (where the `pom.xml` should be placed).
-
-Eclipse should then import a parent project (`xcs-sample`) and 6 child projects
-(`tests`, `domain`, `service`, `rest`, `jsf` and `ear`).
-
-If you want, you can use any other IDE, such as IntelliJ IDEA or NetBeans, as
-long as they are compatible with Maven projects, but we recommend using Eclipse
-Neon for Java EE.
-
-### MySQL
+### 1.4. MySQL 5.5+
 In order to run the tests with the `wildfly-embedded-mysql` profile (more about
 this in the **Sample 2** section) and to run the application, we need a MySQL
 server.
@@ -51,8 +52,9 @@ The server can be installed as usual, but it must contain two databases:
   * The `xcs` database for running the application.
   * The `xcssampletest` database for testing the appliaction.
 
-In both cases, the user `xcs` identified by `xcs` should have all privileges on
-this database. You can do this by executing the following commands:
+In both cases, the user `xcs` identified by `xcs` password should have all
+privileges on this database. You can do this by executing the following
+commands:
 
 ```sql
 CREATE DATABASE xcs;
@@ -65,121 +67,141 @@ FLUSH PRIVILEGES;
 ```
 
 If you want to add some data to the `xcs` database to run the application (data
-will be automatically inseted to the `xcssampletest` database during the tests),
- you can also execute:
+will be automatically inserted to the `xcssampletest` database during the
+tests) you can also execute:
 
 ```sql
-  DROP TABLE IF EXISTS `User`;
-	CREATE TABLE `User` (
-	  `role` varchar(5) NOT NULL,
-	  `login` varchar(100) NOT NULL,
-	  `password` varchar(32) NOT NULL,
-	  PRIMARY KEY (`login`)
-	);
+DROP TABLE IF EXISTS `User`;
+  CREATE TABLE `User` (
+    `role` varchar(5) NOT NULL,
+    `login` varchar(100) NOT NULL,
+    `password` varchar(32) NOT NULL,
+    PRIMARY KEY (`login`)
+);
 
-	DROP TABLE IF EXISTS `Pet`;
-	CREATE TABLE `Pet` (
-	  `id` int(11) NOT NULL AUTO_INCREMENT,
-	  `animal` varchar(4) NOT NULL,
-	  `birth` datetime NOT NULL,
-	  `name` varchar(100) NOT NULL,
-	  `owner` varchar(100) NOT NULL,
-	  PRIMARY KEY (`id`),
-	  KEY `FK_6mfctqh1tpytabbk1u4bk1pym` (`owner`),
-	  CONSTRAINT `FK_6mfctqh1tpytabbk1u4bk1pym` FOREIGN KEY (`owner`) REFERENCES `User` (`login`)
-	);
+DROP TABLE IF EXISTS `Pet`;
+CREATE TABLE `Pet` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `animal` varchar(4) NOT NULL,
+  `birth` datetime NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `owner` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_6mfctqh1tpytabbk1u4bk1pym` (`owner`),
+  CONSTRAINT `FK_6mfctqh1tpytabbk1u4bk1pym` FOREIGN KEY (`owner`) REFERENCES `User` (`login`)
+);
 
-	-- All the passwords are "<login>pass".
-	INSERT INTO `User`
-	   VALUES ('ADMIN','jose','A3F6F4B40B24E2FD61F08923ED452F34'),
-	          ('OWNER','pepe','B43B4D046860B2BD945BCA2597BF9F07'),
-	          ('OWNER','juan','B4FBB95580592697DC71488A1F19277E'),
-	          ('OWNER','ana','22BEEAE33E9B2657F9610621502CD7A4'),
-	          ('OWNER','lorena','05009E420932C21E5A68F5EF1AADD530');
+-- All the passwords are "<login>pass".
+INSERT INTO `User`
+VALUES ('ADMIN','jose','A3F6F4B40B24E2FD61F08923ED452F34'),
+       ('OWNER','pepe','B43B4D046860B2BD945BCA2597BF9F07'),
+       ('OWNER','juan','B4FBB95580592697DC71488A1F19277E'),
+       ('OWNER','ana','22BEEAE33E9B2657F9610621502CD7A4'),
+       ('OWNER','lorena','05009E420932C21E5A68F5EF1AADD530');
 
-	INSERT INTO `Pet` (animal, birth, name, owner)
-	   VALUES ('CAT','2000-01-01 01:01:01','Pepecat','pepe'),
-	          ('CAT','2000-01-01 01:01:01','Max','juan'),
-	          ('DOG','2000-01-01 01:01:01','Juandog','juan'),
-	          ('CAT','2000-01-01 01:01:01','Anacat','ana'),
-	          ('DOG','2000-01-01 01:01:01','Max','ana'),
-	          ('BIRD','2000-01-01 01:01:01','Anabird','ana');
-
+INSERT INTO `Pet` (animal, birth, name, owner)
+VALUES ('CAT','2000-01-01 01:01:01','Pepecat','pepe'),
+       ('CAT','2000-01-01 01:01:01','Max','juan'),
+       ('DOG','2000-01-01 01:01:01','Juandog','juan'),
+       ('CAT','2000-01-01 01:01:01','Anacat','ana'),
+       ('DOG','2000-01-01 01:01:01','Max','ana'),
+       ('BIRD','2000-01-01 01:01:01','Anabird','ana');
 ```
 
 You can find the `xcs-sample-mysql.sql` and `xcs-sample-test-mysql.sql` scripts
 with these queries stored in the `additional-material/db` project folder.
 
-### Wildfly 8
-Before we can run the project, we need to configure a WildFly server to include
-the datasource used by the application and the security configuration.
+### 1.5. Eclipse Neon for Java EE
+Open Eclipse Neon for Java EE and import your Maven project with
+`File -> Import -> Maven -> Existing Maven Projects`. In the dialog opened you
+have to select as `Root directory` the directory of the project that you have
+just cloned (it should contain a `pom.xml` file).
+
+Eclipse should then import a parent project (`xcs-sample`) and 6 child projects
+(`tests`, `domain`, `service`, `rest`, `jsf` and `ear`). If any project is
+disabled for import it is probably because you already have another project in
+your workspace with the same name. To avoid this problem you can open the
+advanced settings of the dialog and use a custom `Name template` (for example,
+`xcs-sample-[artifactId]`).
+
+If you want, you can use any other IDE, such as IntelliJ IDEA or NetBeans, as
+long as they are compatible with Maven projects, but we recommend using Eclipse
+Neon for Java EE.
+
+### 1.6 WildFly 8.2.1
+If you want to run the project you need a Java EE server. In this section you
+can find how to configure a local WildFly server to execute the project.
+Basically, we need to configure the WildFly server to include the datasource and
+the security configuration needed by the application.
 
 In the following sections you can find an explanation of how you can configure
 the WildFly server by editing the `standalone.xml`. However, the
-`additional-material/wildfly` folder includes a `standalone.xml` ready to be
-used that you can just copy to your WildFly server (replacing the original
-`standalone/configuration/standalone.xml` file).
+`additional-material/wildfly` directory of the project includes a
+`standalone.xml` ready to be used that you can just copy to your WildFly server
+(replacing the original `standalone/configuration/standalone.xml` file).
 
-#### Datasource
+#### 1.6.1. Datasource configuration
 There are several ways to add a datasource to a WildFly server. We are going to
-add a new datasource to the `standalone/configuration/standalone.xml`
-configuration file of the server. To do so, you have to edit this file and add
-the following content to the `<datasources>` element:
+add it by editing the `standalone/configuration/standalone.xml` configuration
+file of the server. To do so, you have to edit this file and add the following
+content to the `<datasources>` element:
 ```xml
-	<datasource jndi-name="java:jboss/datasources/xcs" pool-name="MySQLPool">
-		<connection-url>jdbc:mysql://localhost:3306/xcs</connection-url>
-		<driver>mysql-connector-java-5.1.21.jar</driver>
-		<pool>
-			<max-pool-size>30</max-pool-size>
-		</pool>
-		<security>
-			<user-name>xcs</user-name>
-			<password>xcs</password>
-		</security>		
-	</datasource>
+<datasource jndi-name="java:jboss/datasources/xcs" pool-name="MySQLPool">
+	<connection-url>jdbc:mysql://localhost:3306/xcs</connection-url>
+	<driver>mysql-connector-java-5.1.21.jar</driver>
+	<pool>
+		<max-pool-size>30</max-pool-size>
+	</pool>
+	<security>
+		<user-name>xcs</user-name>
+		<password>xcs</password>
+	</security>		
+</datasource>
 ```
 
 In addition, you also have to add the MySQL driver to the deployments folder
 (`standalone/deployments`). You can download it form [here](http://central.maven.org/maven2/mysql/mysql-connector-java/5.1.21/mysql-connector-java-5.1.21.jar)
-to the deployments folder and Wildfly will automatically deploy it.
+to the deployments (`standalone/deployments`) directory and WildFly will
+automatically deploy it on startup.
 
-#### Security configuration
+#### 1.6.2. Security configuration
 All the WildFly security configuration is done in the
 `standalone/configuration/standalone.xml` file of the server.
 
-Inside the `<security-reamls>` element you have to add:
+Inside the `<security-reamls>` element you have to add a new security realm:
 ```xml
-	<security-realm name="RemotingRealm">
-		<authentication>
-			<jaas name="AppRealmLoopThrough"/>
-		</authentication>
-	</security-realm>
+<security-realm name="RemotingRealm">
+	<authentication>
+		<jaas name="AppRealmLoopThrough"/>
+	</authentication>
+</security-realm>
 ```
 
-And inside the `<security-domains>` element you have to add:
+Then, inside the `<security-domains>` element you have to add the following
+security domains:
 ```xml
-	<security-domain name="AppRealmLoopThrough" cache-type="default">
-		<authentication>
-			<login-module code="Client" flag="required">
-				<module-option name="multi-threaded" value="true"/>
-			</login-module>
-		</authentication>
-	</security-domain>
-	<security-domain name="xcs-sample-security-domain">
-		<authentication>
-			<login-module code="Database" flag="required">
-				<module-option name="dsJndiName" value="java:jboss/datasources/xcs"/>
-				<module-option name="principalsQuery" value="SELECT password FROM User WHERE login=?"/>
-				<module-option name="rolesQuery" value="SELECT role, 'Roles' FROM User WHERE login=?"/>
-				<module-option name="hashAlgorithm" value="MD5"/>
-				<module-option name="hashEncoding" value="hex"/>
-				<module-option name="ignorePasswordCase" value="true"/>
-			</login-module>
-		</authentication>
-	</security-domain>
+<security-domain name="AppRealmLoopThrough" cache-type="default">
+	<authentication>
+		<login-module code="Client" flag="required">
+			<module-option name="multi-threaded" value="true"/>
+		</login-module>
+	</authentication>
+</security-domain>
+<security-domain name="xcs-sample-security-domain">
+	<authentication>
+		<login-module code="Database" flag="required">
+			<module-option name="dsJndiName" value="java:jboss/datasources/xcs"/>
+			<module-option name="principalsQuery" value="SELECT password FROM User WHERE login=?"/>
+			<module-option name="rolesQuery" value="SELECT role, 'Roles' FROM User WHERE login=?"/>
+			<module-option name="hashAlgorithm" value="MD5"/>
+			<module-option name="hashEncoding" value="hex"/>
+			<module-option name="ignorePasswordCase" value="true"/>
+		</login-module>
+	</authentication>
+</security-domain>
 ```
 
-#### Deploying the application
+#### 1.6.3. Deploying the application manually
 When the `package` goal is run in the `xcs-sample` project, an EAR file is
 generated inside the `target` folder of the `ear` project.
 
@@ -190,80 +212,104 @@ the entire application. To do so, you can copy this file to the
 
 Once this is done, you can run the WildFly server executing the
 `bin/standalone.sh` script. The application should be running in
-`http://localhost:8080/`.
+http://localhost:8080/xcs-sample. If you want to access through the web
+interface, you can open the http://localhost:8080/xcs-sample/jsf URL.
 
-#### Running the application
-This project includes the Maven WildFly plugin, which allows the execution of
-the project without needing an external WildFly server. To run the application
-with the running MySQL database (`xcs`) you just have to go to the `ear` module
-and execute the following command:
+#### 1.6.4 Deploying the application from Maven
+Maven configuration is prepared to deploy the generated EAR file to a running
+WildFly. Doing so is as easy as launching the `wildfly:deploy` goal:
 
 ```bash
-  mvn wildfly:start wildfly:deploy -P wildfly-embedded-mysql,-wildfly-embedded-h2
+mvn wildfly:deploy
 ```
 
-Once the application is running you can access it in the URL `http://localhost:8080/xcs-sample/jsf`.
+This will launch the construction of the project and, at the end, the EAR will
+be deployed. Remember that, if you want a fast deployment, you can avoid the
+test execution with the parameter `-DskipTests=true`.
+
+#### 1.7. Running the application from Maven
+This project includes the Maven WildFly plugin, which allows the execution of
+the application without needing an external WildFly server. To run the
+application with the running MySQL database (`xcs`) you just have execute the
+following command:
+
+```bash
+mvn install -P wildfly-mysql-run,-wildfly-embedded-h2
+```
+This will launch the complete construction cycle (remember that you can skip
+test execution adding the `-DskipTests=true` parameter), start a WildFly server
+and deploy the application. Once the application is running you can access it
+in the URL http://localhost:8080/xcs-sample/jsf.
+
+**Important**: You shouldn't have a local WildFly instance running or Maven will
+not be able to start its own WildFly and will try to deploy the application in
+the running instance. This will cause changes to the WildFly configuration that
+may leave it in an unstable state.
 
 To stop the WildFly lauched you can execute the following command:
 
 ```bash
-  mvn wildfly:shutdown
+mvn wildfly:shutdown
 ```
 
-## Sample 1: Testing entities
+## 2. Samples
+## 2.1. Sample 1: Testing entities
 Using JUnit and Hamcrest, we will see how to test JPA entities or any other
 Java class. This libraries are the base for every test done in the application.
 
-## Sample 2: Testing EJBs
+## 2.2. Sample 2: Testing EJBs
 Using Arquillian and Arquillian Persistence, the EJBs are tested. We wouldn't do
 unit testing in this layer, as we don't want to mock the `EntityManager`.
 
 In this layer we will use some workarounds to set the desired role and principal
 in the tests.
 
-### How to run tests with Arquillian?
+### 2.2.1. How to run tests with Arquillian?
 This project is configured to use two Maven profiles:
-* `wildfly-embedded-h2`: This profile uses Wildfly in embedded mode with the H2
-`ExampleDS` database that is included by default in this Java EE server (it has
-the JNDI name `java:jboss/datasources/ExampleDS`).
-* `wildfly-embedded-mysql`: Same as before, but it uses a MySQL datasource with
-the JNDI name `java:jboss/datasources/xcs`.
+* `wildfly-embedded-h2`: this profile uses WildFly in embedded mode with a H2
+database, whose driver is included by default in WilFly.
+* `wildfly-embedded-mysql`: same as before, but it uses a MySQL database.
 
-In both profiles, the Wildfly server is downloaded automatically using the
+In both profiles, the WildFly server is automatically downloaded using the
 `maven-dependency-plugin`, that extracts it in the `target/wildfly-<version>`
 folder (`target/wildfly-8.2.1.Final` currently). In the MySQL profile, the MySQL
 driver is also downloaded using this plugin and added to the
 `target/wildfly-<version>/standalone/deployments` folder, to make it available
-in the Wildfly server.
+in the WildFly server.
 
 For each profile, Maven is configured to use the files stored in
 `src/test/resources-<profile name>` as resources when running tests, in addition
 to the stored in the `src/test/resources` folder, as usual. Inside this folder,
 the projects using Arquillian must include a `standalone.xml` file, that will be
-replace the default `standalone.xml` file of the Wildfly server. This is
-specially useful to configure the security constraints. The MySQL resources
-folder must also include a `mysql-ds.xml` file, with the MySQL datasource
-configuration that will be added to the Wildfly server.
+replace the default `standalone.xml` file of the WildFly server. This is
+specially useful to configure the security constraints and datasources.
+
+In order to avoid port collising with other WildFly instances, the WildFly used
+by the test have a port offset of 10000. This means that the HTTP port is
+displaced from the default 8080 port to the 18080 port, and the management port
+is displaced from the default 9990 port to the 19990 port.
 
 Therefore, when running Maven tests (e.g. `mvn test`), they will run without any
 external requirement.
 
-#### Arquillian tests in Eclipse
+#### 2.2.1.1 Arquillian tests in Eclipse
 To run Arquillian tests in Eclipse (or in any non-Maven enviroment) a further
 step is needed. You must configure the following system properties:
-* `java.util.logging.manager`: The logger to be used by the standard Java
+* `java.util.logging.manager`: the logger to be used by the standard Java
 logger. Commonly, the value `org.jboss.logmanager.LogManager` is used.
-* `wildfly.version`: The version of the Wildfly server stored in `target`.
+* `wildfly.version`: the version of the WildFly server stored in `target`.
 The current version is `8.2.1.Final`.
 
 In Eclipse, this system properties can be added to the run configuration in the
 `VM arguments` field of the `Arguments` tab. For example, the following
 configuration will work for the current configuration:
+
 ```
 -Dwildfly.version=8.2.1.Final
 -Djava.util.logging.manager=org.jboss.logmanager.LogManager
 ```
-This configuration will run with the **h2** database. If you wish to run the
+
+This configuration will run with the **H2** database. If you wish to run the
 tests with the **MySQL** database, you have to add to additional system
 configuration:
 * `mysql.version`: The version of the MySQL driver (currently, `5.1.21`). This
@@ -273,6 +319,7 @@ by Arquillian. It should be `wildfly-embedded-mysql` to use the MySQL profile.
 
 Therefore, the `VM arguments` configuration for running the tests in Eclipse
 using the MySQL database is:
+
 ```
 -Dwildfly.version=8.2.1.Final
 -Djava.util.logging.manager=org.jboss.logmanager.LogManager
@@ -280,30 +327,30 @@ using the MySQL database is:
 -Darquillian.launch=wildfly-embedded-mysql
 ```
 
-## Sample 3: Testing with test doubles
+## 2.3. Sample 3: Testing with test doubles
 Using EasyMock, we will mock the EJBs to test the REST classes isolated from the
 underlying layer.
 
-## Sample 4: Testing JAX-RS
+## 2.4. Sample 4: Testing JAX-RS
 Using Arquillian REST Client, we will test the REST API accessing it as real
 HTTP clients.
 
 Tests can be run using the same configuration as explained in *Sample 2*.
 
 When executed, the REST resources can be found in:
-* Owners: `http://localhost:8080/rest/api/owner`
-* Pets: `http://localhost:8080/rest/api/pet`
+* Owners: http://localhost:8080/xcs-sample/rest/api/owner
+* Pets: http://localhost:8080/xcs-sample/rest/api/pet
 
-## Sample 5: Testing JSF
+## 2.5. Sample 5: Testing JSF
 Using Arquillian Drone, Arquillian Graphene and Selenium, we will test the JSF
 web interface accessing it as real Web clients.
 
 Tests can be run using the same configuration as explained in *Sample 2*.
 
 When executed, the REST resources can be found in
-`http://localhost:8080/jsf/faces/index.html`.
+http://localhost:8080/xcs-sample/jsf/faces/index.html.
 
-## Sample 6: Additional Testing Tools
+## 2.6. Sample 6: Additional Testing Tools
 ### Test coverage with JaCoCo
 Test coverage is a very useful tool that shows the parts of the source code that
 are covered by the tests. The coverage analysis is done during the tests

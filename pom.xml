@@ -474,58 +474,153 @@
 							</execution>
 						</executions>
 					</plugin>
-					
-					<plugin>
-		                <groupId>org.wildfly.plugins</groupId>
-		                <artifactId>wildfly-maven-plugin</artifactId>
-		                <configuration>
-		                	<before-deployment>
-		                		<batch/>
-								<commands>
-									<command>data-source add --jndi-name=java:jboss/datasources/xcs --name=xcs-sample --jta=true --use-ccm=true --connection-url=jdbc:h2:mem:xcs;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE --driver-name=h2 --user-name=xcs --password=xcs</command>
-									<command>/core-service=management/security-realm=RemotingRealm:add</command>
-									<command>/core-service=management/security-realm=RemotingRealm/authentication=jaas:add(name="AppRealmLoopThrough")</command>
-									<command>/subsystem=remoting/http-connector=http-remoting-connector:write-attribute(name="security-realm", value="RemotingRealm")</command>
-									<command>/subsystem=security/security-domain=AppRealmLoopThrough:add(cache-type=default)</command>
-									<command>/subsystem=security/security-domain=AppRealmLoopThrough/authentication=classic:add(login-modules=[{"code"=>"Client", "flag" => "required", "module-options" => [("multi-threaded" => "true")]}])</command>
-									<command>/subsystem=security/security-domain=xcs-sample-security-domain:add</command>
-									<command>/subsystem=security/security-domain=xcs-sample-security-domain/authentication=classic:add(login-modules=[{"code"=>"Database", "flag" => "required", "module-options" => [("dsJndiName" => "java:jboss/datasources/xcs"),("principalsQuery" => "SELECT password FROM User WHERE login=?"),("rolesQuery" => "SELECT role, 'Roles' FROM User WHERE login=?"),("hashAlgorithm" => "MD5"),("hashEncoding" => "hex"),("ignorePasswordCase" => "true")]}])</command>
-								</commands>
-		                	</before-deployment>
-		                	<after-deployment>
-		                		<commands>
-		                			<command>:reload</command>
-		                		</commands>
-		                	</after-deployment>
-		                	<add-user>
-		                		<users>
-		                			<user>
-		                				<username>wildfly-admin</username>
-		                				<password>xcsadmin</password>
-		                				<applicationUser>false</applicationUser>
-		                			</user>
-		                			<user>
-		                				<username>admin</username>
-		                				<password>adminpass</password>
-		                				<applicationUser>true</applicationUser>
-		                				<groups>ADMIN</groups>
-		                			</user>
-		                			<user>
-		                				<username>owner</username>
-		                				<password>ownerpass</password>
-		                				<applicationUser>true</applicationUser>
-		                				<groups>OWNER</groups>
-		                			</user>
-		                		</users>
-		                	</add-user>
-		                </configuration>
-		            </plugin>
 				</plugins>
 			</build>
 		</profile>
 
 		<profile>
 			<id>wildfly-embedded-mysql</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.wildfly</groupId>
+					<artifactId>wildfly-arquillian-container-embedded</artifactId>
+					<scope>test</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.wildfly</groupId>
+					<artifactId>wildfly-embedded</artifactId>
+					<scope>test</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+					<scope>test</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-simple</artifactId>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+			<build>
+				<testResources>
+					<testResource>
+						<directory>src/test/resources</directory>
+					</testResource>
+					<testResource>
+						<directory>src/test/resources-wildfly-embedded-mysql</directory>
+					</testResource>
+				</testResources>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<forkCount>1</forkCount>
+							<systemPropertyVariables>
+								<java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+								<mysql.version>${mysql.connector.java.version}</mysql.version>
+								<wildfly.version>${wildfly.version}</wildfly.version>
+								<arquillian.launch>wildfly-embedded</arquillian.launch>
+							</systemPropertyVariables>
+							<redirectTestOutputToFile>false</redirectTestOutputToFile>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>unpack</id>
+								<phase>process-test-classes</phase>
+								<goals>
+									<goal>unpack</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>org.wildfly</groupId>
+											<artifactId>wildfly-dist</artifactId>
+											<version>${wildfly.version}</version>
+											<type>zip</type>
+											<overWrite>false</overWrite>
+											<outputDirectory>target</outputDirectory>
+										</artifactItem>
+									</artifactItems>
+								</configuration>
+							</execution>
+							<execution>
+								<id>copy-mysql</id>
+								<phase>process-test-classes</phase>
+								<goals>
+									<goal>copy</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>mysql</groupId>
+											<artifactId>mysql-connector-java</artifactId>
+											<type>jar</type>
+											<overWrite>false</overWrite>
+											<outputDirectory>${project.build.directory}/wildfly-${wildfly.version}/standalone/deployments</outputDirectory>
+										</artifactItem>
+									</artifactItems>
+								</configuration>
+							</execution>
+							<execution>
+								<id>copy-mysql-for-execution</id>
+								<phase>process-test-classes</phase>
+								<goals>
+									<goal>copy</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>mysql</groupId>
+											<artifactId>mysql-connector-java</artifactId>
+											<type>jar</type>
+											<overWrite>false</overWrite>
+											<outputDirectory>${project.build.directory}</outputDirectory>
+											<destFileName>mysql-connector-java-${mysql.connector.java.version}.jar</destFileName>
+										</artifactItem>
+									</artifactItems>
+								</configuration>
+								<!-- This JAR will be used for executing the Wildfly server -->
+							</execution>
+						</executions>
+					</plugin>
+
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-resources-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>copy-wildfly-resources</id>
+								<phase>process-test-classes</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${project.build.directory}/wildfly-${wildfly.version}/standalone/configuration</outputDirectory>
+									<resources>
+										<resource>
+											<directory>src/test/resources-wildfly-embedded-mysql</directory>
+											<include>standalone.xml</include>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>wildfly-mysql-run</id>
 			<dependencies>
 				<dependency>
 					<groupId>org.wildfly</groupId>
@@ -692,6 +787,16 @@
 		                		</users>
 	                		</add-user>
 		                </configuration>
+		                <executions>
+		                	<execution>
+		                		<id>start-wildfly</id>
+		                		<phase>install</phase>
+		                		<goals>
+		                			<goal>start</goal>
+		                			<goal>deploy</goal>
+		                		</goals>
+		                	</execution>
+		                </executions>
 		            </plugin>
 				</plugins>
 			</build>
