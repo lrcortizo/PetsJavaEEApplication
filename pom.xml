@@ -41,8 +41,8 @@
 		<!-- BOM versions -->
 		<javaee.api.version>7.0</javaee.api.version>
 		<arquillian.version>1.1.11.Final</arquillian.version>
-		<arquillian.rest.version>1.0.0.Alpha3</arquillian.rest.version>
-		<arquillian.selenium.version>2.53.1</arquillian.selenium.version>
+		<arquillian.rest.version>1.0.0.Alpha4</arquillian.rest.version>
+		<arquillian.selenium.version>3.0.0</arquillian.selenium.version>
 
 		<!-- Dependencies versions -->
 		<wildfly.version>8.2.1.Final</wildfly.version>
@@ -59,6 +59,7 @@
 		<mysql.connector.java.version>5.1.21</mysql.connector.java.version>
 		<resteasy.version>3.0.19.Final</resteasy.version>
 		<graphene.webdrive.version>2.1.0.Final</graphene.webdrive.version>
+		<geckodriver.version>v0.11.1</geckodriver.version>
 
 		<!-- Plugins versions -->
 		<wildfly.maven.plugin.version>1.1.0.Alpha11</wildfly.maven.plugin.version>
@@ -70,6 +71,7 @@
 		<maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
 		<maven.resources.plugin.version>3.0.1</maven.resources.plugin.version>
 		<maven.ear.plugin.version>2.10.1</maven.ear.plugin.version>
+		<maven.antrun.plugin.version>1.8</maven.antrun.plugin.version>
 	</properties>
 
 	<dependencyManagement>
@@ -210,7 +212,7 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -271,6 +273,11 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
 					<version>${maven.dependency.plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<version>${maven.antrun.plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -360,6 +367,25 @@
 										</versionRange>
 										<goals>
 											<goal>unpack</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-antrun-plugin
+										</artifactId>
+										<versionRange>
+											[1.8,)
+										</versionRange>
+										<goals>
+											<goal>run</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
