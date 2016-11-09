@@ -4,17 +4,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import es.uvigo.esei.xcs.domain.entities.AnimalType;
 import es.uvigo.esei.xcs.domain.entities.Pet;
 import es.uvigo.esei.xcs.service.PetService;
 
-@ManagedBean(name = "pet")
-@SessionScoped
+@Named("pet")
+@RequestScoped
 public class PetManagedBean {
 	@Inject
 	private PetService service;
@@ -23,7 +23,7 @@ public class PetManagedBean {
 	private Date birth;
 	private AnimalType animal;
 	
-	private Pet currentPet;
+	private Integer id;
 	
 	private String errorMessage;
 	
@@ -62,7 +62,15 @@ public class PetManagedBean {
 	}
 	
 	public boolean isEditing() {
-		return this.currentPet != null;
+		return this.id != null;
+	}
+	
+	public Integer getId() {
+		return id;
+	}
+	
+	public void setId(Integer id) {
+		this.id = id;
 	}
 	
 	public List<Pet> getPets() {
@@ -70,10 +78,10 @@ public class PetManagedBean {
 	}
 	
 	public String edit(Pet pet) {
-		this.currentPet = pet;
-		this.name = this.currentPet.getName();
-		this.birth = this.currentPet.getBirth();
-		this.animal = this.currentPet.getAnimal();
+		this.id = pet.getId();
+		this.name = pet.getName();
+		this.birth = pet.getBirth();
+		this.animal = pet.getAnimal();
 		
 		return this.getViewId();
 	}
@@ -93,11 +101,12 @@ public class PetManagedBean {
 	public String store() {
 		try {
 			if (this.isEditing()) {
-				this.currentPet.setName(this.name);
-				this.currentPet.setBirth(this.birth);
-				this.currentPet.setAnimal(this.animal);
+				final Pet pet = this.service.get(this.id);
+				pet.setName(this.name);
+				pet.setBirth(this.birth);
+				pet.setAnimal(this.animal);
 				
-				this.service.update(this.currentPet);
+				this.service.update(pet);
 			} else {
 				this.service.create(new Pet(name, animal, birth));
 			}
@@ -113,10 +122,10 @@ public class PetManagedBean {
 	}
 	
 	private void clear() {
-		this.currentPet = null;
 		this.name = null;
 		this.birth = null;
 		this.animal = null;
+		this.id = null;
 		this.errorMessage = null;
 	}
 

@@ -1,5 +1,6 @@
 package es.uvigo.esei.xcs.jsf.pages;
 
+import static java.util.Arrays.stream;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertThat;
 
@@ -25,16 +26,11 @@ public class OwnersPage {
 	private GrapheneElement storeError;
 	
 	public void assertOnOwnersPage() {
-		assertThat(browser.getCurrentUrl(), containsString("/faces/admin/owners.xhtml"));
+		assertThat(browser.getCurrentUrl(), containsString("/owners.xhtml"));
 	}
 	
 	public boolean areOwnersInTable(Owner ... owners) {
-		for (Owner owner : owners) {
-			if (!this.isOwnerInTable(owner))
-				return false;
-		}
-		
-		return true;
+		return stream(owners).allMatch(this::isOwnerInTable);
 	}
 	
 	public boolean isOwnerInTable(Owner owner) {

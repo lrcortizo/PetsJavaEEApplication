@@ -2,14 +2,14 @@ package es.uvigo.esei.xcs.jsf;
 
 import java.security.Principal;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-@ManagedBean(name = "login")
+@Named("login")
 @RequestScoped
 public class LoginManagedBean {
 	@Inject

@@ -18,8 +18,9 @@
 						<h:inputText id="name-field" class="form-control" a:placeholder="Owner name" value="#{owner.login}" readonly="#{owner.editing}"></h:inputText>
 						<h:outputLabel for="password-field">Password</h:outputLabel>
 						<h:inputSecret id="password-field" class="form-control" a:placeholder="Owner password" value="#{owner.password}"></h:inputSecret>
-						<h:commandButton id="submit-button" class="btn btn-default" value="Store" action="#{owner.store}" />
-						<h:commandButton id="cancel-button" class="btn btn-default" value="Cancel" action="#{owner.cancelEditing()}" rendered="#{owner.editing}"/>
+						<h:inputHidden id="editing" value="#{owner.editing}"></h:inputHidden>
+						<h:commandButton id="submit-button" class="btn btn-default" value="Store" action="#{owner.store()}" />
+						<h:commandButton id="cancel-button" class="btn btn-default" value="Cancel" action="#{owner.cancelEditing()}" />
 					</h:form>
 				</h:panelGroup>
 				<div class="row">
@@ -50,7 +51,7 @@
 					<h:column>
 						<h:form>
 							<h:commandButton class="owners-table-remove" value="Remove" action="#{owner.remove(c.login)}"/>
-							<h:commandButton class="owners-table-edit" value="Edit" action="#{owner.edit(c)}"/>
+							<h:commandButton class="owners-table-edit" value="Edit" action="#{owner.edit(c.login)}"/>
 						</h:form>
 					</h:column>
 				</h:dataTable>

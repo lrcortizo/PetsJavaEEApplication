@@ -4,25 +4,25 @@ import static java.util.stream.Collectors.joining;
 
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import es.uvigo.esei.xcs.domain.entities.Owner;
 import es.uvigo.esei.xcs.domain.entities.Pet;
 import es.uvigo.esei.xcs.service.OwnerService;
 
-@ManagedBean(name = "owner")
-@SessionScoped
-public class OwnerManagerdBean {
+@Named("owner")
+@RequestScoped
+public class OwnerManagedBean {
 	@Inject
 	private OwnerService service;
 	
 	private String login;
 	private String password;
 	
-	private Owner currentOwner;
+	private boolean editing;
 	
 	private String errorMessage;
 	
@@ -51,7 +51,11 @@ public class OwnerManagerdBean {
 	}
 	
 	public boolean isEditing() {
-		return this.currentOwner != null;
+		return this.editing;
+	}
+	
+	public void setEditing(boolean editing) {
+		this.editing = editing;
 	}
 	
 	public List<Owner> getOwners() {
@@ -64,9 +68,9 @@ public class OwnerManagerdBean {
 		.collect(joining(", "));
 	}
 	
-	public String edit(Owner owner) {
-		this.currentOwner = owner;
-		this.login = this.currentOwner.getLogin();
+	public String edit(String login) {
+		this.editing = true;
+		this.login = login;
 		
 		return this.getViewId();
 	}
@@ -86,9 +90,10 @@ public class OwnerManagerdBean {
 	public String store() {
 		try {
 			if (this.isEditing()) {
-				this.currentOwner.changePassword(this.password);
+				final Owner owner = this.service.get(this.login);
+				owner.changePassword(this.password);
 				
-				this.service.update(this.currentOwner);
+				this.service.update(owner);
 			} else {
 				this.service.create(new Owner(login, password));
 			}
@@ -107,7 +112,7 @@ public class OwnerManagerdBean {
 		this.login = null;
 		this.password = null;
 		this.errorMessage = null;
-		this.currentOwner = null;
+		this.editing = false;
 	}
 
 	private String redirectTo(String url) {

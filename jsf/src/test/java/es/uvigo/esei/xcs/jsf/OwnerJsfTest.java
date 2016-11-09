@@ -64,8 +64,8 @@ public class OwnerJsfTest {
             .addAsWebResource(WEBAPP.resolve("admin/owners.xhtml").toFile(), "admin/owners.xhtml")
 			.addAsResource("test-persistence.xml", "META-INF/persistence.xml")
 			.addAsWebInfResource(WEBAPP.resolve("WEB-INF/template.xhtml").toFile())
-			.addAsWebInfResource("jboss-web.xml")
-			.addAsWebInfResource("web.xml")
+			.addAsWebInfResource(WEBAPP.resolve("WEB-INF/web.xml").toFile())
+			.addAsWebInfResource(WEBAPP.resolve("WEB-INF/jboss-web.xml").toFile())
 			.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 	}
 	
@@ -229,8 +229,6 @@ public class OwnerJsfTest {
 		assertDeleteOwner(ownerWithPets());
 	}
 	
-	
-	
 	@Test @InSequence(36)
 	@ShouldMatchDataSet("owners-remove-with-pets.xml")
 	@CleanupUsingScript({ "cleanup.sql", "cleanup-autoincrement.sql" })
@@ -245,6 +243,8 @@ public class OwnerJsfTest {
 		
 		assertThat(ownersPage.areOwnersInTable(expectedOwners), is(true));
 	}
+	
+	
 	
 	@Test @InSequence(41)
 	@UsingDataSet("owners.xml")
@@ -268,7 +268,7 @@ public class OwnerJsfTest {
 	}
 	
 	@Test @InSequence(43)
-	@ShouldMatchDataSet("owners-update-password.xml")
+	@ShouldMatchDataSet(value = "owners-update-password.xml")
 	@CleanupUsingScript({ "cleanup.sql", "cleanup-autoincrement.sql" })
 	public void afterEdit() {}
 	

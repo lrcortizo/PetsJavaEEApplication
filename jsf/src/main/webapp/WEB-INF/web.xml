@@ -5,14 +5,33 @@
 	<display-name>Pet Store JSF</display-name>
 
 	<welcome-file-list>
-		<welcome-file>/faces/index.xhtml</welcome-file>
+		<welcome-file>index.xhtml</welcome-file>
 	</welcome-file-list>
+
+    <!-- Change to "Production" when you are ready to deploy -->
+    <context-param>
+        <param-name>javax.faces.PROJECT_STAGE</param-name>
+        <param-value>Development</param-value>
+    </context-param>
+
+    <!-- JSF mapping -->
+    <servlet>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <!-- Map these files with JSF -->
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>*.xhtml</url-pattern>
+    </servlet-mapping>
 
 	<!--Defining security constraint for type of roles available -->
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>admin</web-resource-name>
-			<url-pattern>/faces/admin/*</url-pattern>
+			<url-pattern>/admin/*</url-pattern>
 			<http-method>POST</http-method>
 			<http-method>GET</http-method>
 			<http-method>PUT</http-method>
@@ -26,7 +45,7 @@
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>owner</web-resource-name>
-			<url-pattern>/faces/owner/*</url-pattern>
+			<url-pattern>/owner/*</url-pattern>
 			<http-method>POST</http-method>
 			<http-method>GET</http-method>
 			<http-method>PUT</http-method>

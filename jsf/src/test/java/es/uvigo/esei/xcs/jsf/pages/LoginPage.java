@@ -8,7 +8,7 @@ import org.jboss.arquillian.graphene.page.Location;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.FindBy;
 
-@Location("faces/index.xhtml")
+@Location("index.xhtml")
 public class LoginPage {
 	@Drone
 	private WebDriver browser;
@@ -21,6 +21,6 @@ public class LoginPage {
 	}
 	
 	public void assertOnLoginPage() {
-		assertThat(browser.getCurrentUrl(), containsString("/faces/index.xhtml"));
+		assertThat(browser.getCurrentUrl(), containsString("/index.xhtml"));
 	}
 }
