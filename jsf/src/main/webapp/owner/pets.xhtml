@@ -15,10 +15,10 @@
 				<h:panelGroup class="row">
 					<h:form>
 						<h:inputText class="form-control" a:placeholder="Pet name" value="#{pet.name}"></h:inputText>
-						<h:inputText value="#{pet.birth}" size="20" required="true" label="Receipt Date" class="form-control">
+						<h:inputText value="#{pet.birth}" size="20" required="true" label="Receipt Date" class="form-control" a:placeholder="Birth (YYYY-MM-DD hh:mm:ss)">
 							<f:convertDateTime pattern="yyyy-M-d hh:mm:ss" />
 						</h:inputText>
-						<h:selectOneMenu value="#{pet.animal}" class="form-control" a:placeholder="Birth (YYYY-MM-DD hh:mm:ss)">
+						<h:selectOneMenu value="#{pet.animal}" class="form-control">
 							<f:selectItem itemValue="BIRD" itemLabel="Bird" />
 							<f:selectItem itemValue="CAT" itemLabel="Cat" />
 							<f:selectItem itemValue="DOG" itemLabel="Dog" />

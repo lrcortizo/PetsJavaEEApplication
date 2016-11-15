@@ -47,6 +47,7 @@
 		<!-- Dependencies versions -->
 		<wildfly.version>8.2.1.Final</wildfly.version>
 		<commons.lang3.version>3.4</commons.lang3.version>
+		<bootstrap.version>3.3.7-1</bootstrap.version>
 
 		<!-- Testing dependecies versions -->
 		<junit.version>4.12</junit.version>
@@ -130,6 +131,11 @@
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
 				<version>${commons.lang3.version}</version>
+			</dependency>
+			<dependency>
+			    <groupId>org.webjars</groupId>
+			    <artifactId>bootstrap</artifactId>
+			    <version>${bootstrap.version}</version>
 			</dependency>
 
 			<!-- Testing -->
