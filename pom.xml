@@ -819,7 +819,7 @@
 		                		<phase>install</phase>
 		                		<goals>
 		                			<goal>start</goal>
-		                			<goal>deploy</goal>
+		                			<goal>deploy-only</goal>
 		                		</goals>
 		                	</execution>
 		                </executions>
