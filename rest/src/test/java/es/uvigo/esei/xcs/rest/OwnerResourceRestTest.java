@@ -12,12 +12,11 @@ import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.newOwnerWithPersis
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.newOwnerWithoutPets;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.newPasswordForExistentOwner;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.owners;
-import static es.uvigo.esei.xcs.http.util.HasHttpStatus.hasHttpStatus;
+import static es.uvigo.esei.xcs.http.util.HasHttpStatus.hasBadRequestStatus;
+import static es.uvigo.esei.xcs.http.util.HasHttpStatus.hasCreatedStatus;
+import static es.uvigo.esei.xcs.http.util.HasHttpStatus.hasMethodNotAllowedStatus;
+import static es.uvigo.esei.xcs.http.util.HasHttpStatus.hasOkStatus;
 import static javax.ws.rs.client.Entity.json;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.CREATED;
-import static javax.ws.rs.core.Response.Status.METHOD_NOT_ALLOWED;
-import static javax.ws.rs.core.Response.Status.OK;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -58,7 +57,7 @@ public class OwnerResourceRestTest {
 	
 	@Deployment
 	public static Archive<?> createDeployment() {
-		final WebArchive archive = ShrinkWrap.create(WebArchive.class, "test.war")
+		return ShrinkWrap.create(WebArchive.class, "test.war")
 			.addClass(OwnerResource.class)
 			.addClasses(CORSFilter.class, IllegalArgumentExceptionMapper.class, SecurityExceptionMapper.class)
 			.addPackage(OwnerService.class.getPackage())
@@ -67,8 +66,6 @@ public class OwnerResourceRestTest {
 			.addAsWebInfResource("jboss-web.xml")
 			.addAsWebInfResource("web.xml")
 			.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-		
-		return archive;
 	}
 
 	@Test @InSequence(1)
@@ -84,7 +81,7 @@ public class OwnerResourceRestTest {
 	) throws Exception {
 	    final Response response = webTarget.request().get();
 
-	    assertThat(response, hasHttpStatus(OK));
+	    assertThat(response, hasOkStatus());
 	    
 	    final Owner owner = response.readEntity(Owner.class);
 	    final Owner expected = existentOwner();
@@ -112,7 +109,7 @@ public class OwnerResourceRestTest {
 	) throws Exception {
 	    final Response response = webTarget.request().get();
 
-	    assertThat(response, hasHttpStatus(BAD_REQUEST));
+	    assertThat(response, hasBadRequestStatus());
 	}
 	
 	@Test @InSequence(6)
@@ -135,7 +132,7 @@ public class OwnerResourceRestTest {
 	) throws Exception {
 	    final Response response = webTarget.request().get();
 
-	    assertThat(response, hasHttpStatus(OK));
+	    assertThat(response, hasOkStatus());
 	    
 	    final List<Owner> list = ListOwnerType.readEntity(response);
 	    assertThat(list, containsOwnersInAnyOrder(owners()));
@@ -196,7 +193,7 @@ public class OwnerResourceRestTest {
 	private void testCreateOwner(WebTarget webTarget, Owner newOwner, Owner persistentOwner) {
 	    final Response response = webTarget.request().post(json(newOwner));
 
-	    assertThat(response, hasHttpStatus(CREATED));
+	    assertThat(response, hasCreatedStatus());
 	    
 	    final String location = response.getHeaderString("Location");
 	    
@@ -222,7 +219,7 @@ public class OwnerResourceRestTest {
 	    
 	    final Response response = webTarget.request().put(json(owner));
 
-	    assertThat(response, hasHttpStatus(OK));
+	    assertThat(response, hasOkStatus());
 	}
 	
 	@Test @InSequence(32)
@@ -245,7 +242,7 @@ public class OwnerResourceRestTest {
 	) throws Exception {
 	    final Response response = webTarget.request().delete();
 
-	    assertThat(response, hasHttpStatus(OK));
+	    assertThat(response, hasOkStatus());
 	}
 	
 	@Test @InSequence(42)
@@ -268,7 +265,7 @@ public class OwnerResourceRestTest {
 	) throws Exception {
 	    final Response response = webTarget.request().delete();
 
-	    assertThat(response, hasHttpStatus(OK));
+	    assertThat(response, hasOkStatus());
 	}
 	
 	@Test @InSequence(45)
@@ -291,7 +288,7 @@ public class OwnerResourceRestTest {
 	) throws Exception {
 	    final Response response = webTarget.request().delete();
 
-	    assertThat(response, hasHttpStatus(METHOD_NOT_ALLOWED));
+	    assertThat(response, hasMethodNotAllowedStatus());
 	}
 	
 	@Test @InSequence(48)

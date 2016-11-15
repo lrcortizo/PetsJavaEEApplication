@@ -37,7 +37,7 @@ public abstract class IsEqualToEntity<T> extends TypeSafeMatcher<T> {
 	/**
 	 * Constructs a new instance of {@link IsEqualToEntity}.
 	 *
-	 * @param entity the expected tentity.
+	 * @param entity the expected entity.
 	 */
 	public IsEqualToEntity(final T entity) {
 		this.expected = requireNonNull(entity);

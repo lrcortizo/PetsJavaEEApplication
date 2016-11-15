@@ -99,7 +99,7 @@ public class OwnersDataset {
 		return owners.toArray(new Owner[owners.size()]);
 	}
 	
-	public static Pet pet(int id) {
+	public static Pet petWithId(int id) {
 		return stream(pets())
 			.filter(pet -> pet.getId() == id)
 			.findFirst()
@@ -177,8 +177,15 @@ public class OwnersDataset {
 		return ownerWithLogin(OWNER_WITHOUT_PETS_LOGIN);
 	}
 	
+	public static Pet anyPetOf(Owner owner) {
+		if (owner.getPets().isEmpty())
+			throw new IllegalArgumentException("owner doesn't have pets");
+		
+		return owner.getPets().iterator().next();
+	}
+	
 	public static Pet anyPet() {
-		return pet(existentPetId());
+		return petWithId(existentPetId());
 	}
 	
 	public static Pet newPet() {
@@ -199,6 +206,10 @@ public class OwnersDataset {
 	
 	public static int existentPetId() {
 		return 2;
+	}
+	
+	public static Pet existentPet() {
+		return petWithId(existentPetId());
 	}
 	
 	public static int nonExistentPetId() {

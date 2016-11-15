@@ -2,13 +2,15 @@ package es.uvigo.esei.xcs.service;
 
 import static es.uvigo.esei.xcs.domain.entities.IsEqualToPet.containsPetsInAnyOrder;
 import static es.uvigo.esei.xcs.domain.entities.IsEqualToPet.equalToPet;
+import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.anyPetOf;
+import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.existentPet;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.existentPetId;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.newPet;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.newPetWithOwner;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.nonExistentPetId;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.ownerWithPets;
 import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.ownerWithoutPets;
-import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.pet;
+import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.petWithId;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
@@ -55,37 +57,33 @@ public class PetServiceIntegrationTest {
 	
 	@Deployment
 	public static Archive<?> createDeployment() {
-		final WebArchive archive = ShrinkWrap.create(WebArchive.class, "test.war")
+		return ShrinkWrap.create(WebArchive.class, "test.war")
 			.addClasses(PetService.class, OwnersDataset.class)
 			.addPackage(RoleCaller.class.getPackage())
 			.addPackage(Pet.class.getPackage())
 			.addAsResource("test-persistence.xml", "META-INF/persistence.xml")
 			.addAsWebInfResource("jboss-web.xml")
 			.addAsWebInfResource("beans.xml", "beans.xml");
-
-		return archive;
 	}
 	
 	@Test
 	@ShouldMatchDataSet("owners.xml")
 	public void testGet() throws LoginException {
-		final int id = existentPetId();
-		final Pet pet = pet(id);
-		principal.setName(pet.getOwner().getLogin());
+		final Pet existentPet = existentPet();
 		
-		final Pet actual = asOwner.call(() -> facade.get(id));
+		principal.setName(existentPet.getOwner().getLogin());
 		
-		assertThat(actual, equalToPet(pet));
+		final Pet actualPet = asOwner.call(() -> facade.get(existentPet.getId()));
+		
+		assertThat(actualPet, equalToPet(existentPet));
 	}
 
 	@Test
 	@ShouldMatchDataSet("owners.xml")
 	public void testGetBadId() throws LoginException {
-		final int id = nonExistentPetId();
-		
 		principal.setName(ownerWithoutPets().getLogin());
 		
-		final Pet actual = asOwner.call(() -> facade.get(id));
+		final Pet actual = asOwner.call(() -> facade.get(nonExistentPetId()));
 		
 		assertThat(actual, is(nullValue()));
 	}
@@ -94,8 +92,7 @@ public class PetServiceIntegrationTest {
 	@ShouldMatchDataSet("owners.xml")
 	public void testGetOthersPetId() throws LoginException {
 		final Owner ownerWithoutPets = ownerWithoutPets();
-		final Owner ownerWithPets = ownerWithPets();
-		final int petId = ownerWithPets.getPets().iterator().next().getId();
+		final int petId = anyPetOf(ownerWithPets()).getId();
 		
 		principal.setName(ownerWithoutPets.getLogin());
 		
@@ -105,21 +102,19 @@ public class PetServiceIntegrationTest {
 	@Test
 	@ShouldMatchDataSet("owners.xml")
 	public void testList() throws LoginException {
-		final Owner owner = ownerWithPets();
-		final Pet[] ownedPets = owner.getPets().toArray(new Pet[0]);
-		principal.setName(owner.getLogin());
+		final Owner ownerWithPets = ownerWithPets();
 		
-		final List<Pet> pets = asOwner.call(() -> facade.list());
+		principal.setName(ownerWithPets.getLogin());
 		
-		assertThat(pets, containsPetsInAnyOrder(ownedPets));
+		final List<Pet> actualPets = asOwner.call(() -> facade.list());
+		
+		assertThat(actualPets, containsPetsInAnyOrder(ownerWithPets.getPets()));
 	}
 
 	@Test
 	@ShouldMatchDataSet("owners.xml")
 	public void testListNoPets() throws LoginException {
-		final Owner owner = ownerWithoutPets();
-		
-		principal.setName(owner.getLogin());
+		principal.setName(ownerWithoutPets().getLogin());
 		
 		final List<Pet> pets = asOwner.call(() -> facade.list());
 		
@@ -129,10 +124,11 @@ public class PetServiceIntegrationTest {
 	@Test
 	@ShouldMatchDataSet({ "owners.xml", "owners-create-pet.xml" })
 	public void testCreate() {
-		final Owner owner = ownerWithoutPets();
-		principal.setName(owner.getLogin());
+		final Owner ownerWithoutPets = ownerWithoutPets();
 		
-		final Pet pet = newPetWithOwner(owner);
+		principal.setName(ownerWithoutPets.getLogin());
+		
+		final Pet pet = newPetWithOwner(ownerWithoutPets);
 		
 		asOwner.call(() -> facade.create(pet));
 	}
@@ -158,12 +154,9 @@ public class PetServiceIntegrationTest {
 	@Test(expected = EJBTransactionRolledbackException.class)
 	@ShouldMatchDataSet({ "owners.xml" })
 	public void testCreateWrongOwner() {
-		final Owner owner = ownerWithoutPets();
-		final Owner otherOwner = ownerWithPets();
+		principal.setName(ownerWithoutPets().getLogin());
 		
-		principal.setName(owner.getLogin());
-		
-		final Pet pet = newPetWithOwner(otherOwner);
+		final Pet pet = newPetWithOwner(ownerWithPets());
 		
 		asOwner.run(() -> facade.create(pet));
 	}
@@ -171,25 +164,25 @@ public class PetServiceIntegrationTest {
 	@Test
 	@ShouldMatchDataSet("owners-update-pet.xml")
 	public void testUpdate() throws LoginException {
-		final int id = existentPetId();
-		final Pet pet = pet(id);
+		final Pet existentPet = existentPet();
 		
-		principal.setName(pet.getOwner().getLogin());
+		principal.setName(existentPet.getOwner().getLogin());
 		
-		pet.setName("UpdateName");
-		pet.setAnimal(AnimalType.BIRD);
-		pet.setBirth(new Date(946771261000L));
+		existentPet.setName("UpdateName");
+		existentPet.setAnimal(AnimalType.BIRD);
+		existentPet.setBirth(new Date(946771261000L));
 		
-		asOwner.run(() -> facade.update(pet));
+		asOwner.run(() -> facade.update(existentPet));
 	}
 
 	@Test
 	@ShouldMatchDataSet({ "owners.xml", "owners-create-pet.xml" })
 	public void testUpdateNewPetWithOwner() {
-		final Owner owner = ownerWithoutPets();
-		principal.setName(owner.getLogin());
+		final Owner ownerWithoutPets = ownerWithoutPets();
 		
-		final Pet pet = newPetWithOwner(owner);
+		principal.setName(ownerWithoutPets.getLogin());
+		
+		final Pet pet = newPetWithOwner(ownerWithoutPets);
 		
 		asOwner.call(() -> facade.update(pet));
 	}
@@ -203,12 +196,9 @@ public class PetServiceIntegrationTest {
 	@Test(expected = EJBTransactionRolledbackException.class)
 	@ShouldMatchDataSet({ "owners.xml" })
 	public void testUpdateWrongOwner() {
-		final Owner owner = ownerWithoutPets();
-		final Owner otherOwner = ownerWithPets();
+		principal.setName(ownerWithoutPets().getLogin());
 		
-		principal.setName(owner.getLogin());
-		
-		final Pet pet = otherOwner.getPets().iterator().next();
+		final Pet pet = anyPetOf(ownerWithPets());
 		
 		asOwner.run(() -> facade.update(pet));
 	}
@@ -217,7 +207,7 @@ public class PetServiceIntegrationTest {
 	@ShouldMatchDataSet({ "owners.xml", "owners-create-pet.xml" })
 	public void testUpdatePetNoOwner() {
 		final int id = existentPetId();
-		final Pet pet = pet(id);
+		final Pet pet = petWithId(id);
 		
 		principal.setName(pet.getOwner().getLogin());
 		pet.setOwner(null);
@@ -229,29 +219,26 @@ public class PetServiceIntegrationTest {
 	@Test
 	@ShouldMatchDataSet("owners-remove-pet.xml")
 	public void testRemove() throws LoginException {
-		final int id = existentPetId();
-		final Pet pet = pet(id);
-		principal.setName(pet.getOwner().getLogin());
+		final Pet existentPet = existentPet();
 		
-		asOwner.run(() -> facade.remove(id));
+		principal.setName(existentPet.getOwner().getLogin());
+		
+		asOwner.run(() -> facade.remove(existentPet.getId()));
 	}
 
 	@Test(expected = EJBTransactionRolledbackException.class)
 	@ShouldMatchDataSet("owners.xml")
 	public void testRemoveBadId() throws LoginException {
-		final int id = nonExistentPetId();
-		
 		principal.setName(ownerWithoutPets().getLogin());
 		
-		asOwner.run(() -> facade.remove(id));
+		asOwner.run(() -> facade.remove(nonExistentPetId()));
 	}
 
 	@Test(expected = EJBTransactionRolledbackException.class)
 	@ShouldMatchDataSet("owners.xml")
 	public void testRemoveOthersPetId() throws LoginException {
 		final Owner ownerWithoutPets = ownerWithoutPets();
-		final Owner ownerWithPets = ownerWithPets();
-		final int petId = ownerWithPets.getPets().iterator().next().getId();
+		final int petId = anyPetOf(ownerWithPets()).getId();
 		
 		principal.setName(ownerWithoutPets.getLogin());
 		
