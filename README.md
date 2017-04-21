@@ -58,11 +58,11 @@ commands:
 
 ```sql
 CREATE DATABASE xcs;
-GRANT ALL PRIVILEGES ON xcs TO xcs@localhost IDENTIFIED BY 'xcs';
+GRANT ALL PRIVILEGES ON xcs.* TO xcs@localhost IDENTIFIED BY 'xcs';
 FLUSH PRIVILEGES;
 
 CREATE DATABASE xcssampletest;
-GRANT ALL PRIVILEGES ON xcssampletest TO xcs@localhost IDENTIFIED BY 'xcs';
+GRANT ALL PRIVILEGES ON xcssampletest.* TO xcs@localhost IDENTIFIED BY 'xcs';
 FLUSH PRIVILEGES;
 ```
 
@@ -72,11 +72,11 @@ tests) you can also execute:
 
 ```sql
 DROP TABLE IF EXISTS `User`;
-  CREATE TABLE `User` (
-    `role` varchar(5) NOT NULL,
-    `login` varchar(100) NOT NULL,
-    `password` varchar(32) NOT NULL,
-    PRIMARY KEY (`login`)
+CREATE TABLE `User` (
+  `role` varchar(5) NOT NULL,
+  `login` varchar(100) NOT NULL,
+  `password` varchar(32) NOT NULL,
+  PRIMARY KEY (`login`)
 );
 
 DROP TABLE IF EXISTS `Pet`;
@@ -155,7 +155,7 @@ content to the `<datasources>` element:
 	<security>
 		<user-name>xcs</user-name>
 		<password>xcs</password>
-	</security>		
+	</security>
 </datasource>
 ```
 
