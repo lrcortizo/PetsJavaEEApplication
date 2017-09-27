@@ -64,6 +64,8 @@ public class OwnerServiceIntegrationTest {
 			.addPackage(Owner.class.getPackage())
 			.addAsResource("test-persistence.xml", "META-INF/persistence.xml")
 			.addAsWebInfResource("jboss-web.xml")
+            .addAsResource("arquillian.extension.persistence.properties")
+            .addAsResource("arquillian.extension.persistence.dbunit.properties")
 			.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 	}
 

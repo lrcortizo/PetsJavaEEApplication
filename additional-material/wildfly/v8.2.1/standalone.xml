@@ -155,7 +155,7 @@
                 <datasource jta="true" jndi-name="java:jboss/datasources/xcs" pool-name="xcs-mysql" enabled="true" use-ccm="true">
                     <connection-url>jdbc:mysql://localhost:3306/xcs</connection-url>
                     <driver-class>com.mysql.jdbc.Driver</driver-class>
-                    <driver>mysql-connector-java-${mysql.version}.jar</driver>
+                    <driver>mysql-connector-java-5.1.21.jar</driver>
                     <security>
                         <user-name>xcs</user-name>
                         <password>xcs</password>
@@ -329,28 +329,26 @@
                     </authorization>
                 </security-domain>
                 
-	            <!-- Custom domain -->
-				<security-domain name="AppRealmLoopThrough" cache-type="default">
-					<authentication>
-						<login-module code="Client" flag="required">
-							<module-option name="multi-threaded" value="true" />
-						</login-module>
-					</authentication>
-				</security-domain>
-				<security-domain name="xcs-sample-security-domain">
-					<authentication>
-						<login-module code="Database" flag="required">
-							<module-option name="dsJndiName" value="java:jboss/datasources/xcs" />
-							<module-option name="principalsQuery"
-								value="SELECT password FROM User WHERE login=?" />
-							<module-option name="rolesQuery"
-								value="SELECT role, 'Roles' FROM User WHERE login=?" />
-                            <module-option name="hashAlgorithm" value="MD5"/>
-                            <module-option name="hashEncoding" value="hex"/>
-                            <module-option name="ignorePasswordCase" value="true"/>
-						</login-module>
-					</authentication>
-				</security-domain>
+	              <!-- Custom domain -->
+                <security-domain name="AppRealmLoopThrough" cache-type="default">
+                  <authentication>
+                    <login-module code="Client" flag="required">
+                      <module-option name="multi-threaded" value="true" />
+                    </login-module>
+                  </authentication>
+                </security-domain>
+                <security-domain name="xcs-sample-security-domain">
+                  <authentication>
+                    <login-module code="Database" flag="required">
+                      <module-option name="dsJndiName" value="java:jboss/datasources/xcs" />
+                      <module-option name="principalsQuery" value="SELECT password FROM User WHERE login=?" />
+                      <module-option name="rolesQuery" value="SELECT role, 'Roles' FROM User WHERE login=?" />
+                      <module-option name="hashAlgorithm" value="MD5" />
+                      <module-option name="hashEncoding" value="hex" />
+                      <module-option name="ignorePasswordCase" value="true" />
+                    </login-module>
+                  </authentication>
+                </security-domain>
             </security-domains>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:transactions:2.0">

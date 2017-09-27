@@ -13,6 +13,7 @@ import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.ownersWithout;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -32,6 +33,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -66,6 +68,8 @@ public class OwnerJsfTest {
 			.addAsWebInfResource(WEBAPP.resolve("WEB-INF/template.xhtml").toFile())
 			.addAsWebInfResource(WEBAPP.resolve("WEB-INF/web.xml").toFile())
 			.addAsWebInfResource(WEBAPP.resolve("WEB-INF/jboss-web.xml").toFile())
+            .addAsResource("arquillian.extension.persistence.properties")
+            .addAsResource("arquillian.extension.persistence.dbunit.properties")
 			.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 	}
 	

@@ -5,13 +5,14 @@ the XCS subject inside the DGSS itinerary.
 
 ## 1. Deployment Environment
 The environment is based on Java 8, Maven 3.3+, Git 1.9+, MySQL 5.5+,
-WildFly 8.2.1 and Eclipse Neon for JavaEE.
+WildFly 10.1.0 and Eclipse Oxygen for JavaEE.
 
 ### 1.1. Java JDK 8
 Download and install Java JDK 8, preferably the Oracle version (the commands
 `java` and `javac` must be available).
 
 You can test your Java installation with the commands:
+
 ```bash
 java -version
 javac -version
@@ -20,27 +21,34 @@ javac -version
 ### 1.2. Maven 3.3+
 Install Maven 3 in your system, if it was not installed (the `mvn` command must
 be available). If you are in a Debian-based OS, install the `maven` package
-(**don't install `maven2` package!!**).
+(**don't install `maven2` package!!**):
+
+```
+sudo apt-get install maven
+```
 
 You can test your Maven installation with the command:
+
 ```bash
 mvn --version
 ```
 
 ### 1.3. Git 1.9+
-First, install Git in your system if it was not installed (the `git` command
+Firstly, install Git in your system if it was not installed (the `git` command
 must be available). We will work with Git to get updates of these sample.
 Concretely, we will work with a Git repository inside
-[our Gitlab server](http://sing.ei.uvigo.es/dt/gitlab).
+[our Gitlab server](https://www.sing-group.org/dt/gitlab).
 
 You can tests your Git installation with the command:
+
 ```bash
 git --version
 ```
 
 Once Git is installed in your system, clone the project:
+
 ```bash
-git clone http://sing.ei.uvigo.es/dt/gitlab/dgss-1617/xcs-sample.git
+git clone http://sing-group.org/dt/gitlab/dgss-1718/xcs-sample.git
 ```
 
 ### 1.4. MySQL 5.5+
@@ -111,8 +119,8 @@ VALUES ('CAT','2000-01-01 01:01:01','Pepecat','pepe'),
 You can find the `xcs-sample-mysql.sql` and `xcs-sample-test-mysql.sql` scripts
 with these queries stored in the `additional-material/db` project folder.
 
-### 1.5. Eclipse Neon for Java EE
-Open Eclipse Neon for Java EE and import your Maven project with
+### 1.5. Eclipse Oxygen for Java EE
+Open Eclipse Oxygen for Java EE and import your Maven project with
 `File -> Import -> Maven -> Existing Maven Projects`. In the dialog opened you
 have to select as `Root directory` the directory of the project that you have
 just cloned (it should contain a `pom.xml` file).
@@ -126,9 +134,9 @@ advanced settings of the dialog and use a custom `Name template` (for example,
 
 If you want, you can use any other IDE, such as IntelliJ IDEA or NetBeans, as
 long as they are compatible with Maven projects, but we recommend using Eclipse
-Neon for Java EE.
+Oxygen for Java EE.
 
-### 1.6 WildFly 8.2.1
+### 1.6 WildFly 10.1.0
 If you want to run the project you need a Java EE server. In this section you
 can find how to configure a local WildFly server to execute the project.
 Basically, we need to configure the WildFly server to include the datasource and
@@ -137,14 +145,16 @@ the security configuration needed by the application.
 In the following sections you can find an explanation of how you can configure
 the WildFly server by editing the `standalone.xml`. However, the
 `additional-material/wildfly` directory of the project includes a
-`standalone.xml` ready to be used that you can just copy to your WildFly server
-(replacing the original `standalone/configuration/standalone.xml` file).
+`standalone.xml` ready to be used for the 10.1.0 and 10.1.0 versions that you can
+just copy to your WildFly server (replacing the original
+  `standalone/configuration/standalone.xml` file).
 
 #### 1.6.1. Datasource configuration
 There are several ways to add a datasource to a WildFly server. We are going to
 add it by editing the `standalone/configuration/standalone.xml` configuration
 file of the server. To do so, you have to edit this file and add the following
 content to the `<datasources>` element:
+
 ```xml
 <datasource jndi-name="java:jboss/datasources/xcs" pool-name="MySQLPool">
 	<connection-url>jdbc:mysql://localhost:3306/xcs</connection-url>
@@ -169,6 +179,7 @@ All the WildFly security configuration is done in the
 `standalone/configuration/standalone.xml` file of the server.
 
 Inside the `<security-reamls>` element you have to add a new security realm:
+
 ```xml
 <security-realm name="RemotingRealm">
 	<authentication>
@@ -179,6 +190,7 @@ Inside the `<security-reamls>` element you have to add a new security realm:
 
 Then, inside the `<security-domains>` element you have to add the following
 security domains:
+
 ```xml
 <security-domain name="AppRealmLoopThrough" cache-type="default">
 	<authentication>
@@ -236,17 +248,16 @@ following command:
 ```bash
 mvn install -P wildfly-mysql-run,-wildfly-embedded-h2
 ```
-This will launch the complete construction cycle (remember that you can skip
-test execution adding the `-DskipTests=true` parameter), start a WildFly server
-and deploy the application. Once the application is running you can access it
-in the URL http://localhost:8080/xcs-sample/jsf.
+This will launch the complete construction cycle without running the tests,
+start a WildFly server and deploy the application. Once the application is
+running you can access it in the URL http://localhost:8080/xcs-sample/jsf.
 
 **Important**: You shouldn't have a local WildFly instance running or Maven will
 not be able to start its own WildFly and will try to deploy the application in
 the running instance. This will cause changes to the WildFly configuration that
 may leave it in an unstable state.
 
-To stop the WildFly lauched you can execute the following command:
+To stop the WildFly launched you can execute the following command:
 
 ```bash
 mvn wildfly:shutdown
@@ -272,8 +283,8 @@ database, whose driver is included by default in WilFly.
 
 In both profiles, the WildFly server is automatically downloaded using the
 `maven-dependency-plugin`, that extracts it in the `target/wildfly-<version>`
-folder (`target/wildfly-8.2.1.Final` currently). In the MySQL profile, the MySQL
-driver is also downloaded using this plugin and added to the
+folder (`target/wildfly-10.1.0.Final` currently). In the MySQL profile, the
+MySQL driver is also downloaded using this plugin and added to the
 `target/wildfly-<version>/standalone/deployments` folder, to make it available
 in the WildFly server.
 
@@ -295,25 +306,37 @@ external requirement.
 #### 2.2.1.1 Arquillian tests in Eclipse
 To run Arquillian tests in Eclipse (or in any non-Maven enviroment) a further
 step is needed. You must configure the following system properties:
+* `arquillian.launch`: the launch configuration that arquillian should use.
+* `wildfly.version`: the version of the WildFly server stored in `target`.
+The current version is `10.1.0.Final`.
+* `wildfly.jbossHome`: the location of the WildFly server.
+* `wildfly.modulePath`: the location of the module of the WildFly server.
 * `java.util.logging.manager`: the logger to be used by the standard Java
 logger. Commonly, the value `org.jboss.logmanager.LogManager` is used.
-* `wildfly.version`: the version of the WildFly server stored in `target`.
-The current version is `8.2.1.Final`.
+* `jboss.socket.binding.port-offset`: this is an optional parameter that
+can be used to move the WildFly default ports.
+* `wildfly.http.port`: HTTP of the WildFly server.
+* `wildfly.management.port`: management port of the WildFly server.
 
 In Eclipse, this system properties can be added to the run configuration in the
 `VM arguments` field of the `Arguments` tab. For example, the following
 configuration will work for the current configuration:
 
 ```
--Dwildfly.version=8.2.1.Final
+-Darquillian.launch=wildfly-embedded
+-Dwildfly.version=10.1.0.Final
+-Dwildfly.jbossHome=target/wildfly-10.1.0.Final
+-Dwildfly.modulePath=target/wildfly-10.1.0.Final/modules
 -Djava.util.logging.manager=org.jboss.logmanager.LogManager
+-Djboss.socket.binding.port-offset=10000
+-Dwildfly.http.port=18080
+-Dwildfly.management.port=19990
 ```
 
 This configuration will run with the **H2** database. If you wish to run the
 tests with the **MySQL** database, you have to add to additional system
 configuration:
-* `mysql.version`: The version of the MySQL driver (currently, `5.1.21`). This
-version is used by the `mysql-ds.xml` configuration files.
+* `mysql.version`: The version of the MySQL driver (currently, `5.1.21`).
 * `arquillian.launch`: This system property is used to change the profile used
 by Arquillian. It should be `wildfly-embedded-mysql` to use the MySQL profile.
 
@@ -321,10 +344,15 @@ Therefore, the `VM arguments` configuration for running the tests in Eclipse
 using the MySQL database is:
 
 ```
--Dwildfly.version=8.2.1.Final
--Djava.util.logging.manager=org.jboss.logmanager.LogManager
--Dmysql.version=5.1.21
 -Darquillian.launch=wildfly-embedded-mysql
+-Dmysql.version=5.1.21
+-Dwildfly.version=10.1.0.Final
+-Dwildfly.jbossHome=target/wildfly-10.1.0.Final
+-Dwildfly.modulePath=target/wildfly-10.1.0.Final/modules
+-Djava.util.logging.manager=org.jboss.logmanager.LogManager
+-Djboss.socket.binding.port-offset=10000
+-Dwildfly.http.port=18080
+-Dwildfly.management.port=19990
 ```
 
 ## 2.3. Sample 3: Testing with test doubles

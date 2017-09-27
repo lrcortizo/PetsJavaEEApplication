@@ -1,23 +1,21 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>es.uvigo.esei.xcs</groupId>
 	<artifactId>sample</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
-
 	<name>Sample</name>
 
 	<distributionManagement>
 		<repository>
 			<id>deployment</id>
 			<name>Internal Releases</name>
-			<url>http://sing.ei.uvigo.es/dt/nexus/content/repositories/releases/</url>
+			<url>https://www.sing-group.org/dt/nexus/content/repositories/releases/</url>
 		</repository>
 		<snapshotRepository>
 			<id>deployment</id>
 			<name>Internal SNAPSHOT Releases</name>
-			<url>http://sing.ei.uvigo.es/dt/nexus/content/repositories/snapshots/</url>
+			<url>https://www.sing-group.org/dt/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
 
@@ -40,39 +38,42 @@
 
 		<!-- BOM versions -->
 		<javaee.api.version>7.0</javaee.api.version>
-		<arquillian.version>1.1.11.Final</arquillian.version>
+		<arquillian.version>1.1.13.Final</arquillian.version>
 		<arquillian.rest.version>1.0.0.Alpha4</arquillian.rest.version>
-		<arquillian.selenium.version>3.0.0</arquillian.selenium.version>
+		<arquillian.selenium.version>3.4.0</arquillian.selenium.version>
+		<shrinkwrap.resolver.bom.version>3.0.0-beta-2</shrinkwrap.resolver.bom.version>
 
 		<!-- Dependencies versions -->
-		<wildfly.version>8.2.1.Final</wildfly.version>
+		<wildfly.version>10.1.0.Final</wildfly.version>
 		<commons.lang3.version>3.4</commons.lang3.version>
 		<bootstrap.version>3.3.7-1</bootstrap.version>
 
 		<!-- Testing dependecies versions -->
-		<junit.version>4.12</junit.version>
-		<hamcrest.version>2.0.0.0</hamcrest.version>
-		<easymock.version>3.4</easymock.version>
-		<jacoco.version>0.7.7.201606060606</jacoco.version>
-		<arquillian.jacoco.version>1.0.0.Alpha8</arquillian.jacoco.version>
+		<arquillian.jacoco.version>1.0.0.Alpha9</arquillian.jacoco.version>
 		<arquillian.persistence.dbunit.version>1.0.0.Alpha7</arquillian.persistence.dbunit.version>
-		<slf4j.version>1.5.10</slf4j.version>
+		<arquillian.wildfly.embedded.version>3.0.3.Final</arquillian.wildfly.embedded.version>
+		<arquillian.wildfly.embedded.container.version>2.1.0.Final</arquillian.wildfly.embedded.container.version>
+		<easymock.version>3.4</easymock.version>
+		<geckodriver.version>v0.19.0</geckodriver.version>
+		<graphene.webdrive.version>2.3.1</graphene.webdrive.version>
+		<hamcrest.version>2.0.0.0</hamcrest.version>
+		<jacoco.version>0.7.9</jacoco.version>
+		<junit.version>4.12</junit.version>
 		<mysql.connector.java.version>5.1.21</mysql.connector.java.version>
-		<resteasy.version>3.0.19.Final</resteasy.version>
-		<graphene.webdrive.version>2.1.0.Final</graphene.webdrive.version>
-		<geckodriver.version>v0.11.1</geckodriver.version>
+		<resteasy.version>3.0.24.Final</resteasy.version>
+		<slf4j.version>1.5.10</slf4j.version>
 
 		<!-- Plugins versions -->
-		<wildfly.maven.plugin.version>1.1.0.Alpha11</wildfly.maven.plugin.version>
-		<maven.compiler.plugin.version>3.5.1</maven.compiler.plugin.version>
-		<maven.source.plugin.version>3.0.1</maven.source.plugin.version>
-		<maven.javadoc.plugin.version>2.10.4</maven.javadoc.plugin.version>
-		<maven.deploy.plugin.version>2.8.2</maven.deploy.plugin.version>
-		<maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
-		<maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
-		<maven.resources.plugin.version>3.0.1</maven.resources.plugin.version>
-		<maven.ear.plugin.version>2.10.1</maven.ear.plugin.version>
 		<maven.antrun.plugin.version>1.8</maven.antrun.plugin.version>
+		<maven.compiler.plugin.version>3.6.1</maven.compiler.plugin.version>
+		<maven.ear.plugin.version>2.10.1</maven.ear.plugin.version>
+		<maven.javadoc.plugin.version>2.10.4</maven.javadoc.plugin.version>
+		<maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
+		<maven.deploy.plugin.version>2.8.2</maven.deploy.plugin.version>
+		<maven.resources.plugin.version>3.0.2</maven.resources.plugin.version>
+		<maven.source.plugin.version>3.0.1</maven.source.plugin.version>
+		<maven.surefire.plugin.version>2.20</maven.surefire.plugin.version>
+		<wildfly.maven.plugin.version>1.2.0.Final</wildfly.maven.plugin.version>
 	</properties>
 
 	<dependencyManagement>
@@ -97,7 +98,7 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-
+      
 			<!-- Modules -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
@@ -133,9 +134,9 @@
 				<version>${commons.lang3.version}</version>
 			</dependency>
 			<dependency>
-			    <groupId>org.webjars</groupId>
-			    <artifactId>bootstrap</artifactId>
-			    <version>${bootstrap.version}</version>
+				<groupId>org.webjars</groupId>
+				<artifactId>bootstrap</artifactId>
+				<version>${bootstrap.version}</version>
 			</dependency>
 
 			<!-- Testing -->
@@ -207,18 +208,18 @@
 				<version>${wildfly.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.wildfly</groupId>
+				<groupId>org.wildfly.core</groupId>
 				<artifactId>wildfly-embedded</artifactId>
-				<version>${wildfly.version}</version>
+				<version>${arquillian.wildfly.embedded.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.wildfly</groupId>
+				<groupId>org.wildfly.arquillian</groupId>
 				<artifactId>wildfly-arquillian-container-embedded</artifactId>
-				<version>${wildfly.version}</version>
+				<version>${arquillian.wildfly.embedded.container.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -253,6 +254,7 @@
 				</executions>
 			</plugin>
 		</plugins>
+
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -304,8 +306,7 @@
 					<artifactId>wildfly-maven-plugin</artifactId>
 					<version>${wildfly.maven.plugin.version}</version>
 					<configuration>
-						<!-- Avoids the execution of the wildfly:* goals in the subproject 
-							unless the plugin is activated in the subproject. -->
+						<!-- Avoids the execution of the wildfly:* goals in the subproject unless the plugin is activated in the subproject. -->
 						<skip>true</skip>
 					</configuration>
 				</plugin>
@@ -351,8 +352,7 @@
 						</execution>
 					</executions>
 				</plugin>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -362,15 +362,9 @@
 							<pluginExecutions>
 								<pluginExecution>
 									<pluginExecutionFilter>
-										<groupId>
-											org.apache.maven.plugins
-										</groupId>
-										<artifactId>
-											maven-dependency-plugin
-										</artifactId>
-										<versionRange>
-											[2.10,)
-										</versionRange>
+										<groupId> org.apache.maven.plugins</groupId>
+										<artifactId> maven-dependency-plugin</artifactId>
+										<versionRange> [2.10,)</versionRange>
 										<goals>
 											<goal>unpack</goal>
 										</goals>
@@ -381,15 +375,9 @@
 								</pluginExecution>
 								<pluginExecution>
 									<pluginExecutionFilter>
-										<groupId>
-											org.apache.maven.plugins
-										</groupId>
-										<artifactId>
-											maven-antrun-plugin
-										</artifactId>
-										<versionRange>
-											[1.8,)
-										</versionRange>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-antrun-plugin</artifactId>
+										<versionRange>[1.8,)</versionRange>
 										<goals>
 											<goal>run</goal>
 										</goals>
@@ -414,13 +402,13 @@
 			</activation>
 			<dependencies>
 				<dependency>
-					<groupId>org.wildfly</groupId>
-					<artifactId>wildfly-arquillian-container-embedded</artifactId>
+					<groupId>org.wildfly.core</groupId>
+					<artifactId>wildfly-embedded</artifactId>
 					<scope>test</scope>
 				</dependency>
 				<dependency>
-					<groupId>org.wildfly</groupId>
-					<artifactId>wildfly-embedded</artifactId>
+					<groupId>org.wildfly.arquillian</groupId>
+					<artifactId>wildfly-arquillian-container-embedded</artifactId>
 					<scope>test</scope>
 				</dependency>
 				<dependency>
@@ -450,14 +438,18 @@
 						<configuration>
 							<forkCount>1</forkCount>
 							<systemPropertyVariables>
-								<java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-								<wildfly.version>${wildfly.version}</wildfly.version>
-								<arquillian.launch>wildfly-embedded</arquillian.launch>
+                <arquillian.launch>wildfly-embedded</arquillian.launch>
+                <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                <jboss.socket.binding.port-offset>10000</jboss.socket.binding.port-offset>
+                <wildfly.version>${wildfly.version}</wildfly.version>
+                <wildfly.http.port>18080</wildfly.http.port>
+                <wildfly.management.port>19990</wildfly.management.port>
+                <wildfly.jbossHome>target/wildfly-${wildfly.version}</wildfly.jbossHome>
+                <wildfly.modulePath>target/wildfly-${wildfly.version}/modules</wildfly.modulePath>
 							</systemPropertyVariables>
 							<redirectTestOutputToFile>false</redirectTestOutputToFile>
 						</configuration>
 					</plugin>
-
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-dependency-plugin</artifactId>
@@ -483,7 +475,6 @@
 							</execution>
 						</executions>
 					</plugin>
-
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-resources-plugin</artifactId>
@@ -517,13 +508,13 @@
 			</activation>
 			<dependencies>
 				<dependency>
-					<groupId>org.wildfly</groupId>
-					<artifactId>wildfly-arquillian-container-embedded</artifactId>
+					<groupId>org.wildfly.core</groupId>
+					<artifactId>wildfly-embedded</artifactId>
 					<scope>test</scope>
 				</dependency>
 				<dependency>
-					<groupId>org.wildfly</groupId>
-					<artifactId>wildfly-embedded</artifactId>
+					<groupId>org.wildfly.arquillian</groupId>
+					<artifactId>wildfly-arquillian-container-embedded</artifactId>
 					<scope>test</scope>
 				</dependency>
 				<dependency>
@@ -553,10 +544,15 @@
 						<configuration>
 							<forkCount>1</forkCount>
 							<systemPropertyVariables>
-								<java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
 								<mysql.version>${mysql.connector.java.version}</mysql.version>
-								<wildfly.version>${wildfly.version}</wildfly.version>
-								<arquillian.launch>wildfly-embedded</arquillian.launch>
+                <arquillian.launch>wildfly-embedded</arquillian.launch>
+                <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                <jboss.socket.binding.port-offset>10000</jboss.socket.binding.port-offset>
+                <wildfly.version>${wildfly.version}</wildfly.version>
+                <wildfly.http.port>18080</wildfly.http.port>
+                <wildfly.management.port>19990</wildfly.management.port>
+                <wildfly.jbossHome>target/wildfly-${wildfly.version}</wildfly.jbossHome>
+                <wildfly.modulePath>target/wildfly-${wildfly.version}/modules</wildfly.modulePath>
 							</systemPropertyVariables>
 							<redirectTestOutputToFile>false</redirectTestOutputToFile>
 						</configuration>
@@ -624,7 +620,6 @@
 							</execution>
 						</executions>
 					</plugin>
-
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-resources-plugin</artifactId>
@@ -653,50 +648,14 @@
 
 		<profile>
 			<id>wildfly-mysql-run</id>
-			<dependencies>
-				<dependency>
-					<groupId>org.wildfly</groupId>
-					<artifactId>wildfly-arquillian-container-embedded</artifactId>
-					<scope>test</scope>
-				</dependency>
-				<dependency>
-					<groupId>org.wildfly</groupId>
-					<artifactId>wildfly-embedded</artifactId>
-					<scope>test</scope>
-				</dependency>
-				<dependency>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
-					<scope>test</scope>
-				</dependency>
-				<dependency>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-simple</artifactId>
-					<scope>test</scope>
-				</dependency>
-			</dependencies>
 			<build>
-				<testResources>
-					<testResource>
-						<directory>src/test/resources</directory>
-					</testResource>
-					<testResource>
-						<directory>src/test/resources-wildfly-embedded-mysql</directory>
-					</testResource>
-				</testResources>
 				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
 						<configuration>
-							<forkCount>1</forkCount>
-							<systemPropertyVariables>
-								<java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-								<mysql.version>${mysql.connector.java.version}</mysql.version>
-								<wildfly.version>${wildfly.version}</wildfly.version>
-								<arquillian.launch>wildfly-embedded</arquillian.launch>
-							</systemPropertyVariables>
-							<redirectTestOutputToFile>false</redirectTestOutputToFile>
+							<!-- Tests will not be run when launching the application -->
+							<skipTests>true</skipTests>
 						</configuration>
 					</plugin>
 					<plugin>
@@ -762,7 +721,6 @@
 							</execution>
 						</executions>
 					</plugin>
-
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-resources-plugin</artifactId>
@@ -785,51 +743,56 @@
 							</execution>
 						</executions>
 					</plugin>
-					
 					<plugin>
-		                <groupId>org.wildfly.plugins</groupId>
-		                <artifactId>wildfly-maven-plugin</artifactId>
-		                <configuration>
-		                	<before-deployment>
-		                		<batch/>
+						<groupId>org.wildfly.plugins</groupId>
+						<artifactId>wildfly-maven-plugin</artifactId>
+						<configuration>
+							<before-deployment>
+								<batch />
 								<commands>
 									<command>deploy ${project.build.directory}/mysql-connector-java-${mysql.connector.java.version}.jar</command>
-									<command>data-source add --jndi-name=java:jboss/datasources/xcs --name=xcs-sample --jta=true --use-ccm=true --connection-url=jdbc:mysql://localhost:3306/xcs --driver-name=mysql-connector-java-${mysql.connector.java.version}.jar --driver-class=com.mysql.jdbc.Driver --user-name=xcs --password=xcs</command>
+									<command>data-source add --jndi-name=java:jboss/datasources/xcs --name=xcs-sample --jta=true --use-ccm=true
+										--connection-url=jdbc:mysql://localhost:3306/xcs --driver-name=mysql-connector-java-${mysql.connector.java.version}.jar
+										--driver-class=com.mysql.jdbc.Driver --user-name=xcs --password=xcs</command>
 									<command>/core-service=management/security-realm=RemotingRealm:add</command>
 									<command>/core-service=management/security-realm=RemotingRealm/authentication=jaas:add(name="AppRealmLoopThrough")</command>
 									<command>/subsystem=remoting/http-connector=http-remoting-connector:write-attribute(name="security-realm", value="RemotingRealm")</command>
 									<command>/subsystem=security/security-domain=AppRealmLoopThrough:add(cache-type=default)</command>
-									<command>/subsystem=security/security-domain=AppRealmLoopThrough/authentication=classic:add(login-modules=[{"code"=>"Client", "flag" => "required", "module-options" => [("multi-threaded" => "true")]}])</command>
+									<command>/subsystem=security/security-domain=AppRealmLoopThrough/authentication=classic:add(login-modules=[{"code"=>"Client", "flag" =>
+										"required", "module-options" => [("multi-threaded" => "true")]}])</command>
 									<command>/subsystem=security/security-domain=xcs-sample-security-domain:add</command>
-									<command>/subsystem=security/security-domain=xcs-sample-security-domain/authentication=classic:add(login-modules=[{"code"=>"Database", "flag" => "required", "module-options" => [("dsJndiName" => "java:jboss/datasources/xcs"),("principalsQuery" => "SELECT password FROM User WHERE login=?"),("rolesQuery" => "SELECT role, 'Roles' FROM User WHERE login=?"),("hashAlgorithm" => "MD5"),("hashEncoding" => "hex"),("ignorePasswordCase" => "true")]}])</command>
+									<command>/subsystem=security/security-domain=xcs-sample-security-domain/authentication=classic:add(login-modules=[{"code"=>"Database", "flag"
+										=> "required", "module-options" => [("dsJndiName" => "java:jboss/datasources/xcs"),("principalsQuery" => "SELECT password FROM User WHERE
+										login=?"),("rolesQuery" => "SELECT role, 'Roles' FROM User WHERE login=?"),("hashAlgorithm" => "MD5"),("hashEncoding" =>
+										"hex"),("ignorePasswordCase" => "true")]}])</command>
 								</commands>
-		                	</before-deployment>
-		                	<after-deployment>
-		                		<commands>
-		                			<command>:reload</command>
-		                		</commands>
-		                	</after-deployment>
-		                	<add-user>
-		                		<users>
-		                			<user>
-		                				<username>wildfly-admin</username>
-		                				<password>xcsadmin</password>
-		                				<applicationUser>false</applicationUser>
-		                			</user>
-		                		</users>
-	                		</add-user>
-		                </configuration>
-		                <executions>
-		                	<execution>
-		                		<id>start-wildfly</id>
-		                		<phase>install</phase>
-		                		<goals>
-		                			<goal>start</goal>
-		                			<goal>deploy-only</goal>
-		                		</goals>
-		                	</execution>
-		                </executions>
-		            </plugin>
+							</before-deployment>
+							<after-deployment>
+								<commands>
+									<command>:reload</command>
+								</commands>
+							</after-deployment>
+							<add-user>
+								<users>
+									<user>
+										<username>wildfly-admin</username>
+										<password>xcsadmin</password>
+										<applicationUser>false</applicationUser>
+									</user>
+								</users>
+							</add-user>
+						</configuration>
+						<executions>
+							<execution>
+								<id>start-wildfly</id>
+								<phase>install</phase>
+								<goals>
+									<goal>start</goal>
+									<goal>deploy-only</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
 				</plugins>
 			</build>
 		</profile>
