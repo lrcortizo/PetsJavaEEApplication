@@ -54,7 +54,7 @@
 		<arquillian.wildfly.embedded.version>3.0.3.Final</arquillian.wildfly.embedded.version>
 		<arquillian.wildfly.embedded.container.version>2.1.0.Final</arquillian.wildfly.embedded.container.version>
 		<easymock.version>3.4</easymock.version>
-		<geckodriver.version>v0.19.0</geckodriver.version>
+		<geckodriver.version>v0.23.0</geckodriver.version>
 		<graphene.webdrive.version>2.3.1</graphene.webdrive.version>
 		<hamcrest.version>2.0.0.0</hamcrest.version>
 		<jacoco.version>0.7.9</jacoco.version>
@@ -438,14 +438,14 @@
 						<configuration>
 							<forkCount>1</forkCount>
 							<systemPropertyVariables>
-                <arquillian.launch>wildfly-embedded</arquillian.launch>
-                <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-                <jboss.socket.binding.port-offset>10000</jboss.socket.binding.port-offset>
-                <wildfly.version>${wildfly.version}</wildfly.version>
-                <wildfly.http.port>18080</wildfly.http.port>
-                <wildfly.management.port>19990</wildfly.management.port>
-                <wildfly.jbossHome>target/wildfly-${wildfly.version}</wildfly.jbossHome>
-                <wildfly.modulePath>target/wildfly-${wildfly.version}/modules</wildfly.modulePath>
+								<arquillian.launch>wildfly-embedded</arquillian.launch>
+								<java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+								<jboss.socket.binding.port-offset>10000</jboss.socket.binding.port-offset>
+								<wildfly.version>${wildfly.version}</wildfly.version>
+								<wildfly.http.port>18080</wildfly.http.port>
+								<wildfly.management.port>19990</wildfly.management.port>
+								<wildfly.jbossHome>target/wildfly-${wildfly.version}</wildfly.jbossHome>
+								<wildfly.modulePath>target/wildfly-${wildfly.version}/modules</wildfly.modulePath>
 							</systemPropertyVariables>
 							<redirectTestOutputToFile>false</redirectTestOutputToFile>
 						</configuration>
@@ -545,14 +545,14 @@
 							<forkCount>1</forkCount>
 							<systemPropertyVariables>
 								<mysql.version>${mysql.connector.java.version}</mysql.version>
-                <arquillian.launch>wildfly-embedded</arquillian.launch>
-                <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-                <jboss.socket.binding.port-offset>10000</jboss.socket.binding.port-offset>
-                <wildfly.version>${wildfly.version}</wildfly.version>
-                <wildfly.http.port>18080</wildfly.http.port>
-                <wildfly.management.port>19990</wildfly.management.port>
-                <wildfly.jbossHome>target/wildfly-${wildfly.version}</wildfly.jbossHome>
-                <wildfly.modulePath>target/wildfly-${wildfly.version}/modules</wildfly.modulePath>
+								<arquillian.launch>wildfly-embedded</arquillian.launch>
+								<java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+								<jboss.socket.binding.port-offset>10000</jboss.socket.binding.port-offset>
+								<wildfly.version>${wildfly.version}</wildfly.version>
+								<wildfly.http.port>18080</wildfly.http.port>
+								<wildfly.management.port>19990</wildfly.management.port>
+								<wildfly.jbossHome>target/wildfly-${wildfly.version}</wildfly.jbossHome>
+								<wildfly.modulePath>target/wildfly-${wildfly.version}/modules</wildfly.modulePath>
 							</systemPropertyVariables>
 							<redirectTestOutputToFile>false</redirectTestOutputToFile>
 						</configuration>

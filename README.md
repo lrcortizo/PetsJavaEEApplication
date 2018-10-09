@@ -48,7 +48,7 @@ git --version
 Once Git is installed in your system, clone the project:
 
 ```bash
-git clone http://sing-group.org/dt/gitlab/dgss-1718/xcs-sample.git
+git clone http://sing-group.org/dt/gitlab/dgss-1819/xcs-sample.git
 ```
 
 ### 1.4. MySQL 5.5+
@@ -144,9 +144,9 @@ the security configuration needed by the application.
 
 In the following sections you can find an explanation of how you can configure
 the WildFly server by editing the `standalone.xml`. However, the
-`additional-material/wildfly` directory of the project includes a
-`standalone.xml` ready to be used for the 10.1.0 and 10.1.0 versions that you can
-just copy to your WildFly server (replacing the original
+`additional-material/wildfly` directory of the project already includes a
+`standalone.xml` ready to be used with the 10.1.0 version, that you can
+just copy directly into your WildFly server (replacing the original
   `standalone/configuration/standalone.xml` file).
 
 #### 1.6.1. Datasource configuration
