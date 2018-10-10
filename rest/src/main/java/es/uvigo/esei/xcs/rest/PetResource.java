@@ -129,6 +129,7 @@ public class PetResource {
 	 * Deletes a pet.
 	 * 
 	 * @param id the identifier of the pet to be deleted.
+	 * @return an empty {@code OK} response.
 	 * @throws IllegalArgumentException if there is no pet with the provided
 	 * identifier.
 	 * @throws SecurityException if the pet's owner is not the current user.

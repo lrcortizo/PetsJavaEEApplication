@@ -79,9 +79,8 @@ public class Owner extends User implements Serializable {
 	}
 	
 	/**
-	 * Returns the pets that belongs to this owner. The collection returned is
+	 * Returns the pets that belong to this owner. The collection returned is
 	 * unmodifiable and no order are guaranteed.
-	 * If the pet already belongs to this owner, no action will be done.
 	 * 
 	 * @return the pets that belongs to this owner. 
 	 */
@@ -138,6 +137,8 @@ public class Owner extends User implements Serializable {
 	/**
 	 * Adds a pet directly to the pets collection of this owner if the pet does
 	 * not already belongs to this owner. The pet's owner will not be updated.
+	 * If the pet already belongs to this owner, no action will be done.
+	 * 
 	 * 
 	 * @param pet the pet to add to this owner. {@code null} values not
 	 * supported.

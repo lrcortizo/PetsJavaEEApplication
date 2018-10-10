@@ -119,6 +119,7 @@ public class OwnerResource {
 	 * Deletes an owner.
 	 * 
 	 * @param login the login of the owner to be deleted.
+	 * @return an empty {@code OK} response.
 	 * @throws IllegalArgumentException if {@code login} is {@code null} or if
 	 * it does not identifies a valid owner.
 	 */

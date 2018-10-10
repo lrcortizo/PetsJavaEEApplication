@@ -103,6 +103,11 @@ public class Pet implements Serializable {
 		this.setOwner(owner);
 	}
 	
+	/**
+	 * Returns the identifier of this pet.
+	 * 
+	 * @return the identifier of this pet. 
+	 */
 	public int getId() {
 		return id;
 	}
@@ -195,7 +200,7 @@ public class Pet implements Serializable {
 	}
 
 	/**
-	 * Sets the owner of this pet. The new owner can be {@code null}, meaining
+	 * Sets the owner of this pet. The new owner can be {@code null}, meaning
 	 * that the pet has no owner.
 	 * 
 	 * @param owner the new owner of the pet. {@code null} value is valid,
