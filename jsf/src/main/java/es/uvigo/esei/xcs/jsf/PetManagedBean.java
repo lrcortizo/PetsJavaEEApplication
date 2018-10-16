@@ -77,7 +77,9 @@ public class PetManagedBean {
 		return this.service.list();
 	}
 	
-	public String edit(Pet pet) {
+	public String edit(int petId) {
+		final Pet pet = this.service.get(petId);
+		
 		this.id = pet.getId();
 		this.name = pet.getName();
 		this.birth = pet.getBirth();

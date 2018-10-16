@@ -36,25 +36,25 @@
 				</div>
 		</ui:define>
 			<ui:define name="content">
-				<h:dataTable value="#{pet.pets}" var="p" styleClass="table table-striped table-bordered">
+				<h:dataTable value="#{pet.pets}" var="petEntity" styleClass="table table-striped table-bordered">
 					<h:column>
 						<f:facet name="header">Name</f:facet>
-						#{p.name}
+						#{petEntity.name}
 					</h:column>
 					<h:column>
 						<f:facet name="header">Birth</f:facet>
-						<h:outputText value="#{p.birth}">
+						<h:outputText value="#{petEntity.birth}">
 							<f:convertDateTime pattern="yyyy-M-d hh:mm:ss" />
 						</h:outputText>
 					</h:column>
 					<h:column>
 						<f:facet name="header">Type</f:facet>
-						#{p.animal}
+						#{petEntity.animal}
 					</h:column>
 					<h:column>
 						<h:form>
-							<h:commandButton value="Remove" type="submit" action="#{pet.remove(p.id)}"/>
-							<h:commandButton value="Edit" action="#{pet.edit(p)}"/>
+							<h:commandButton value="Remove" type="submit" action="#{pet.remove(petEntity.id)}"/>
+							<h:commandButton value="Edit" action="#{pet.edit(petEntity.id)}"/>
 						</h:form>
 					</h:column>
 				</h:dataTable>

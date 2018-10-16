@@ -32,26 +32,26 @@
 			</ui:define>
 			<ui:define name="content">
 				<h:dataTable id="owners-table"
-					value="#{owner.owners}" var="c"
+					value="#{owner.owners}" var="ownerEntity"
 					styleClass="table table-striped table-bordered"
 					columnClasses="owners-table-login,owners-table-password,owners-table-pets,owners-table-options"
 				>
 					<h:column>
 						<f:facet name="header">Login</f:facet>
-						#{c.login}
+						#{ownerEntity.login}
 					</h:column>
 					<h:column>
 						<f:facet name="header">Password</f:facet>
-						#{c.password}
+						#{ownerEntity.password}
 					</h:column>
 					<h:column>
 						<f:facet name="header">Pets</f:facet>
-						#{owner.getPetNames(c.login)}
+						#{owner.getPetNames(ownerEntity.login)}
 					</h:column>
 					<h:column>
 						<h:form>
-							<h:commandButton class="owners-table-remove" value="Remove" action="#{owner.remove(c.login)}"/>
-							<h:commandButton class="owners-table-edit" value="Edit" action="#{owner.edit(c.login)}"/>
+							<h:commandButton class="owners-table-remove" value="Remove" action="#{owner.remove(ownerEntity.login)}"/>
+							<h:commandButton class="owners-table-edit" value="Edit" action="#{owner.edit(ownerEntity.login)}"/>
 						</h:form>
 					</h:column>
 				</h:dataTable>
