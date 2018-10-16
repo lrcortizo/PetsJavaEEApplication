@@ -13,7 +13,6 @@ import static es.uvigo.esei.xcs.domain.entities.OwnersDataset.ownersWithout;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -57,10 +56,15 @@ public class OwnerJsfTest {
 	@Deployment
 	public static Archive<?> createDeployment() {
 		return ShrinkWrap.create(WebArchive.class, "test.war")
+			.addAsLibraries(Maven.resolver()
+				.loadPomFromFile("pom.xml")
+				.importRuntimeAndTestDependencies()
+				.resolve().withTransitivity()
+				.asFile()
+			)
 			.addPackage(LoginManagedBean.class.getPackage())
 			.addPackage(OwnerService.class.getPackage())
 			.addPackage(Owner.class.getPackage())
-            .addPackage(WebDriver.class.getPackage())
             .addPackage(LoginPage.class.getPackage())
 			.addAsWebResource(WEBAPP.resolve("index.xhtml").toFile())
             .addAsWebResource(WEBAPP.resolve("admin/owners.xhtml").toFile(), "admin/owners.xhtml")
