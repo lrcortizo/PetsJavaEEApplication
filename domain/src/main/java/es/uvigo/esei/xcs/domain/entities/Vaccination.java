@@ -21,6 +21,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+
 @Entity(name="Vaccination")
 public class Vaccination implements Serializable{
 private static final long serialVersionUID = 1L;
@@ -69,10 +70,6 @@ private static final long serialVersionUID = 1L;
 
 	public int getId() {
 		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	public String getName() {
@@ -138,6 +135,7 @@ private static final long serialVersionUID = 1L;
 		if (!this.ownsPet(pet))
 			this.pets.add(pet);
 	}
+	
 	
 	void internalRemovePet(Pet pet) {
 		requireNonNull(pet, "pet can't be null");
