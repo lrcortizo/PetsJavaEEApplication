@@ -1,10 +1,12 @@
 package es.uvigo.esei.xcs.domain.entities;
 
+import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.Validate.inclusiveBetween;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
@@ -54,9 +56,15 @@ private static final long serialVersionUID = 1L;
 	}
 	
 	public Vaccination(String name, Date date, int price) {
+		this(name, date, price, null);
+	}
+	
+	public Vaccination(String name, Date date, int price, Pet ... pets) {
 		this.setName(name);
 		this.setDate(date);
-		this.setPrize(price);
+		this.setPrice(price);
+		this.pets = new ArrayList<>();
+		stream(pets).forEach(this::addPet);
 	}
 
 	public int getId() {
@@ -93,7 +101,7 @@ private static final long serialVersionUID = 1L;
 		return price;
 	}
 
-	public void setPrize(int price) {
+	public void setPrice(int price) {
 		requireNonNull(date, "prize can't be null");
 		this.price = price;
 	}
@@ -105,7 +113,36 @@ private static final long serialVersionUID = 1L;
 	public void addPet(Pet pet) {
 		requireNonNull(pet, "pet can't be null");
 		
-		pets.add(pet);
+		if (!this.ownsPet(pet)) {
+			pet.setVaccination(this);
+		}
+	}
+	
+	public void removePet(Pet pet) {
+		requireNonNull(pet, "pet can't be null");
+		
+		if (this.ownsPet(pet)) {
+			pet.setVaccination(null);
+		} else {
+			throw new IllegalArgumentException("pet doesn't belong to this owner");
+		}
+	}
+	
+	public boolean ownsPet(Pet pet) {
+		return this.pets.contains(pet);
+	}
+	
+	void internalAddPet(Pet pet) {
+		requireNonNull(pet, "pet can't be null");
+		
+		if (!this.ownsPet(pet))
+			this.pets.add(pet);
+	}
+	
+	void internalRemovePet(Pet pet) {
+		requireNonNull(pet, "pet can't be null");
+		
+		this.pets.remove(pet);
 	}
 	
 }

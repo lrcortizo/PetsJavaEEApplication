@@ -219,4 +219,18 @@ public class Pet implements Serializable {
 		if (this.owner != null)
 			this.owner.internalAddPet(this);
 	}
+	
+	public Vaccination getVaccination() {
+		return vaccination;
+	}
+	
+	public void setVaccination(Vaccination vaccination) {
+		if (this.vaccination != null)
+			this.vaccination.internalRemovePet(this);
+		
+		this.vaccination = vaccination;
+		
+		if (this.vaccination != null)
+			this.vaccination.internalAddPet(this);
+	}
 }
