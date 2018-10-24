@@ -53,6 +53,10 @@ public class Pet implements Serializable {
 	@XmlTransient
 	private Owner owner;
 	
+	@ManyToOne
+	@JoinColumn(name = "vaccination", referencedColumnName = "id", nullable = false)
+	private Vaccination vaccination;
+	
 	// Required for JPA.
 	Pet() {}
 	

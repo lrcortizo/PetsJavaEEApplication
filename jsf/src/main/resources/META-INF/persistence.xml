@@ -10,6 +10,7 @@
     <class>es.uvigo.esei.xcs.domain.entities.Owner</class>
     <class>es.uvigo.esei.xcs.domain.entities.Pet</class>
     <class>es.uvigo.esei.xcs.domain.entities.Administrator</class>
+    <class>es.uvigo.esei.xcs.domain.entities.Vaccination</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
 
     <properties>
